@@ -1,0 +1,113 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class AirlineReservationSystem {
+
+    private static void displayPassengerSelection(JFrame frame) {
+        // A dialog to contain the passenger selection
+        JDialog dialog = new JDialog(frame, "Select Passengers", true);
+        dialog.setLayout(new GridLayout(0, 2, 10, 10)); 
+        dialog.setSize(300, 200);
+
+        // Add passenger selection components
+        dialog.add(new JLabel("Adults (Age 12+):"));
+        JSpinner adultsSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
+        dialog.add(adultsSpinner);
+
+        dialog.add(new JLabel("Children (Age 2 – 11):"));
+        JSpinner childrenSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        dialog.add(childrenSpinner);
+
+        dialog.add(new JLabel("Infants (Under 2 years):"));
+        JSpinner infantsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        dialog.add(infantsSpinner);
+
+        dialog.add(new JLabel("Infants with Seat (Under 2 years):"));
+        JSpinner infantsWithSeatSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        dialog.add(infantsWithSeatSpinner);
+
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Here we can handle the values from the spinners before closing the dialog
+            
+                dialog.dispose();
+            }
+        });
+        dialog.add(okButton);
+
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        // the frame
+        JFrame frame = new JFrame("Flight Booking System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(1348, 400)); // Preferred size is set, the pack method will respect this
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        // panel to hold components, centered in the frame
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 2, 10, 10)); // Grid layout for label and input pairs
+        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Add components to the panel for user input
+        panel.add(new JLabel("Flying from:"));
+        JTextField flyingFromField = new JTextField();
+        panel.add(flyingFromField);
+
+        panel.add(new JLabel("Flying to:"));
+        JTextField flyingToField = new JTextField();
+        panel.add(flyingToField);
+
+        panel.add(new JLabel("Outbound:"));
+        JFormattedTextField dateOutboundField = new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy"));
+        dateOutboundField.setValue(Calendar.getInstance().getTime());
+        panel.add(dateOutboundField);
+
+        panel.add(new JLabel("Return:"));
+        JFormattedTextField dateReturnField = new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy"));
+        panel.add(dateReturnField);
+
+        panel.add(new JLabel("Class:"));
+        JComboBox<String> classBox = new JComboBox<>(new String[]{"Economy", "Business", "First"});
+        panel.add(classBox);
+
+        // Passenger selection button
+        JButton passengersButton = new JButton("Choose Passengers");
+        passengersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayPassengerSelection(frame);
+            }
+        });
+        panel.add(new JLabel("Passengers:"));
+        panel.add(passengersButton);
+
+        JButton searchFlightsButton = new JButton("Search Flights");
+        panel.add(searchFlightsButton);
+        searchFlightsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(frame, "Searching for flights...");
+            }
+        });
+
+        
+        frame.add(Box.createVerticalGlue()); // This will add a space above the panel
+        frame.add(panel);
+        frame.add(Box.createVerticalGlue()); // And also below it
+
+        // Pack the frame components snugly and center it on screen
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+}
+
