@@ -1,12 +1,12 @@
+import java.util.ArrayList;
+import javax.swing.*;
 
-import java.awt.Frame;
 
+public abstract class baseWindow extends JFrame {
 
-public abstract class baseWindow extends Frame {
-
-	String title;
-	int x;
-	int y;
+	String title = "Title";
+	int x = 1280;
+	int y = 720;
 	
 	public baseWindow(String newTitle) {
 		this.title = newTitle;
@@ -20,7 +20,7 @@ public abstract class baseWindow extends Frame {
 	}
 	
 	public void startWindow() {
-		
+		JFrame win = new JFrame(this.title);
 	}
 	
 	
