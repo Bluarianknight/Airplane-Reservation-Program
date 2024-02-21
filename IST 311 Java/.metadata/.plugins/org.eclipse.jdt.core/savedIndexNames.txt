@@ -1,0 +1,4 @@
+INDEX VERSION 1.134+C:\Users\Pkalp\OneDrive\Desktop\IST311\IST 311 Java\.metadata\.plugins\org.eclipse.jdt.core
+2304159540.index
+1865797976.index
+1166144294.index

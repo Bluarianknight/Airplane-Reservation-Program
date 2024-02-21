@@ -1,0 +1,134 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class AirlineReservationSystem {
+
+    private static void displayPassengerSelection(JFrame frame) {
+        JDialog dialog = new JDialog(frame, "Select Passengers", true);
+        dialog.setLayout(new GridLayout(0, 2, 10, 10));
+        dialog.setSize(300, 200);
+
+        dialog.add(new JLabel("Adults (Age 12+):"));
+        JSpinner adultsSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));
+        dialog.add(adultsSpinner);
+
+        dialog.add(new JLabel("Children (Age 2 – 11):"));
+        JSpinner childrenSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        dialog.add(childrenSpinner);
+
+        dialog.add(new JLabel("Infants (Under 2 years):"));
+        JSpinner infantsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        dialog.add(infantsSpinner);
+
+        dialog.add(new JLabel("Infants with Seat (Under 2 years):"));
+        JSpinner infantsWithSeatSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
+        dialog.add(infantsWithSeatSpinner);
+
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+        dialog.add(okButton);
+
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
+    }
+
+    public class FlightSearchUI {
+
+        public static void main(String[] args) {
+            JFrame frame = new JFrame("Flight Search");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setPreferredSize(new Dimension(1100, 200)); // Set the size to match your layout preference
+
+            // Use GridBagLayout for flexibility
+            frame.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+
+            // Departure Airport
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(10, 10, 10, 5); // Top, left, bottom, right padding
+            frame.add(new JLabel("Departure Airport"), gbc);
+
+            gbc.gridx = 1;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2; // Text field spans two columns
+            frame.add(new JTextField("Washington, DC (IAD)"), gbc);
+
+            // Arrival Airport
+            gbc.gridx = 3;
+            gbc.gridy = 0;
+            gbc.gridwidth = 1; // Reset to default
+            frame.add(new JLabel("Arrival Airport"), gbc);
+
+            gbc.gridx = 4;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2; // Text field spans two columns
+            frame.add(new JTextField(), gbc);
+
+            // Departing and Returning Dates
+            gbc.gridx = 6;
+            gbc.gridy = 0;
+            gbc.gridwidth = 1; // Reset to default
+            frame.add(new JLabel("Departing"), gbc);
+
+            gbc.gridx = 7;
+            gbc.gridy = 0;
+            frame.add(new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy")), gbc);
+
+            gbc.gridx = 8;
+            gbc.gridy = 0;
+            frame.add(new JLabel("Returning"), gbc);
+
+            gbc.gridx = 9;
+            gbc.gridy = 0;
+            frame.add(new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy")), gbc);
+
+            // Passengers
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            frame.add(new JLabel("Passengers"), gbc);
+
+            String[] passengersOptions = {"1 Adult", "2 Adults", "3 Adults", "4 Adults"};
+            gbc.gridx = 1;
+            gbc.gridy = 1;
+            frame.add(new JComboBox<>(passengersOptions), gbc);
+
+            // Class
+            gbc.gridx = 3;
+            gbc.gridy = 1;
+            frame.add(new JLabel("Class"), gbc);
+
+            String[] classOptions = {"Economy Class", "Business Class", "First Class"};
+            gbc.gridx = 4;
+            gbc.gridy = 1;
+            frame.add(new JComboBox<>(classOptions), gbc);
+
+            // Search Button
+            JButton searchButton = new JButton("Search flights");
+            searchButton.setBackground(Color.RED);
+            searchButton.setForeground(Color.WHITE);
+            searchButton.setOpaque(true);
+            searchButton.setBorderPainted(false);
+
+            gbc.gridx = 6;
+            gbc.gridy = 1;
+            gbc.gridwidth = 3; // Button spans three columns
+            gbc.insets = new Insets(10, 5, 10, 10); // Top, left, bottom, right padding
+            frame.add(searchButton, gbc);
+
+            // Set the frame to be visible
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        }
+    }

@@ -1,0 +1,122 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class AirlineReservationSystem {
+
+    private static void displayPassengerSelection(JFrame frame) {
+        JDialog dialog = new JDialog(frame, "Select Passengers", true);
+        dialog.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Margins around components
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.LINE_START;
+
+        dialog.add(new JLabel("Passengers"), gbc);
+
+        gbc.gridy++;
+        dialog.add(new JLabel("Adults (Age 12+):"), gbc);
+        JSpinner adultsSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 9, 1));
+        gbc.gridx++;
+        dialog.add(adultsSpinner, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        dialog.add(new JLabel("Children (Age 2–11):"), gbc);
+        JSpinner childrenSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 9, 1));
+        gbc.gridx++;
+        dialog.add(childrenSpinner, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        dialog.add(new JLabel("Infants (Under 2 years):"), gbc);
+        JSpinner infantsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 9, 1));
+        gbc.gridx++;
+        dialog.add(infantsSpinner, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.gridy++;
+        dialog.add(new JLabel("Please note: You can book a maximum of 9 passengers per booking."), gbc);
+
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(e -> dialog.dispose());
+        gbc.gridwidth = 1;
+        gbc.gridy++;
+        dialog.add(okButton, gbc);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Flight Booking System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        panel.add(new JLabel("Flying from:"), gbc);
+
+        gbc.gridx++;
+        JTextField flyingFromField = new JTextField(20);
+        panel.add(flyingFromField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Flying to:"), gbc);
+
+        gbc.gridx++;
+        JTextField flyingToField = new JTextField(20);
+        panel.add(flyingToField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Outbound:"), gbc);
+
+        gbc.gridx++;
+        JFormattedTextField dateOutboundField = new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy"));
+        dateOutboundField.setValue(Calendar.getInstance().getTime());
+        panel.add(dateOutboundField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Return:"), gbc);
+
+        gbc.gridx++;
+        JFormattedTextField dateReturnField = new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy"));
+        panel.add(dateReturnField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Class:"), gbc);
+
+        gbc.gridx++;
+        JComboBox<String> classBox = new JComboBox<>(new String[]{"Economy", "Business", "First"});
+        panel.add(classBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        JButton passengersButton = new JButton("Choose Passengers");
+        passengersButton.addActionListener(e -> displayPassengerSelection(frame));
+        panel.add(passengersButton, gbc);
+
+        gbc.gridx++;
+        JButton searchFlightsButton = new JButton("Search Flights");
+        panel.add(searchFlightsButton, gbc);
+
+        frame.add(panel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+}
