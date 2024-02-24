@@ -1,6 +1,7 @@
 package GUI;
 
-import java.io.File;
+
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,33 +14,25 @@ import javax.swing.JOptionPane;
 import Main.testWindow;
 
 public class GUIModel {
-	File databaseLocation;
-	String startData = "jdbc:ucanaccess://";
+	String databaseLocation;
+	String startData = "jdbc:ucanaccess://Databases/authorization.accdb";
 	Connection connection = null;
 	Statement statement = null;
 	ResultSet result = null;
 	
+	
+	
 	public GUIModel() {
-		setData();
+		this.databaseLocation = startData;
 	}
 	
-	public GUIModel(File location) {
+	public GUIModel(String location) {
 		this.databaseLocation = location;
 	}
-	
-	public void setData() {
-		JFileChooser filelocation = new JFileChooser();
-		filelocation.showOpenDialog(null);
-		databaseLocation = filelocation.getSelectedFile();
-		
-	}
+
 	
 	public void dataconnect() {
-		String datapath = this.databaseLocation.getPath();
-		datapath.replaceAll("\\", "/");
-		
-		String dataloc = this.startData + datapath;
-		JOptionPane.showMessageDialog(null, dataloc);
+		String datapath = this.databaseLocation;
 		try {
 			connection = DriverManager.getConnection(startData);
 			JOptionPane.showMessageDialog(null, "Connection Successful");
