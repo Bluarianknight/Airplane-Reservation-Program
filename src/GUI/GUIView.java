@@ -30,55 +30,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 public class GUIView {
 
+    private static final String DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb\""; // Update this path
 
-    private static final String DB_URL = "jdbc:ucanaccess://C:/path/to/your/databasefile.accdb"; // Update this path
-
-
-    public static boolean registerUser(String username, String password) {
-        // First, check if the username is already taken
-        if (isUsernameTaken(username)) {
-            return false; // The username is already in use
-        }
-
-        // If the username is not taken, proceed to register the new user
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement ps = connection.prepareStatement("INSERT INTO Users (username, password) VALUES (?, ?)")) {
-            ps.setString(1, username);
-            ps.setString(2, password);
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0; // If at least one row was affected, the registration was successful
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false; // If an exception occurred, registration was not successful
-    }
-
-    public static boolean isUsernameTaken(String username) {
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM Users WHERE username = ?")) {
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0; // If the count is greater than 0, the username is taken
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false; // If an exception occurred, assume the username is not taken
-    }
-
-
-    private static Map<String, String> userDatabase = new HashMap<>();
-
-    static {
-        // Pre-populate with a user for testing purposes
-        userDatabase.put("user", "password"); // Replace with actual user data
-    }
 
     public static boolean authenticateUser(String username, char[] password) {
         try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement ps = connection.prepareStatement("SELECT password FROM Users WHERE username = ?")) {
+             PreparedStatement ps = connection.prepareStatement("SELECT password FROM authorization WHERE username = ?")) {
 
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
@@ -97,7 +54,6 @@ public class GUIView {
         }
         return false; // User not found or password does not match
     }
-
 
     private static void displayPassengerSelection(JFrame frame) {
         JDialog dialog = new JDialog(frame, "Select Passengers", true);
@@ -284,14 +240,6 @@ public class GUIView {
         });
         loginFrame.add(loginButton, gbc);
 
-        // Register button
-        gbc.gridy++;
-        JButton registerButton = new JButton("Register Now");
-        registerButton.addActionListener(e -> {
-            loginFrame.dispose(); // Close the login window
-            createRegisterScreen(); // Open the register screen
-        });
-        loginFrame.add(registerButton, gbc);
 
         loginFrame.pack();
         loginFrame.setLocationRelativeTo(null);
@@ -304,81 +252,6 @@ public class GUIView {
         return null;
     }
 
-    // Method to create the registration screen
-    private static void createRegisterScreen() {
-        JFrame registerFrame = new JFrame("Register");
-        registerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        registerFrame.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        registerFrame.add(new JLabel("User Name"), gbc);
-
-        gbc.gridy++;
-        JTextField userNameField = new JTextField(15);
-        registerFrame.add(userNameField, gbc);
-
-        gbc.gridy++;
-        registerFrame.add(new JLabel("Password"), gbc);
-
-        gbc.gridy++;
-        JPasswordField passwordField = new JPasswordField(15);
-        registerFrame.add(passwordField, gbc);
-
-        gbc.gridy++;
-        registerFrame.add(new JLabel("Confirm Password"), gbc);
-
-        gbc.gridy++;
-        JPasswordField confirmPasswordField = new JPasswordField(15);
-        registerFrame.add(confirmPasswordField, gbc);
-
-        gbc.gridy++;
-        registerFrame.add(new JLabel("Email"), gbc);
-
-        gbc.gridy++;
-        JTextField emailField = new JTextField(15);
-        registerFrame.add(emailField, gbc);
-
-        gbc.gridy++;
-        JButton registerButton = new JButton("Register");
-        registerButton.addActionListener(e -> {
-            String username = userNameField.getText();
-            char[] password = passwordField.getPassword();
-            char[] confirmPassword = confirmPasswordField.getPassword();
-
-            // Check if the passwords match
-            if (!Arrays.equals(password, confirmPassword)) {
-                JOptionPane.showMessageDialog(registerFrame, "Passwords do not match.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Attempt to register the user
-            if (GUIView.registerUser(username, new String(password))) {
-                JOptionPane.showMessageDialog(registerFrame, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                registerFrame.dispose();
-                createLoginScreen();
-            } else {
-                JOptionPane.showMessageDialog(registerFrame, "Username is already taken.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        registerFrame.add(registerButton, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        JButton backButton = new JButton("Back to Login");
-        backButton.addActionListener(e -> {
-            registerFrame.dispose();
-            createLoginScreen();
-        });
-        registerFrame.add(backButton, gbc);
-
-        registerFrame.pack();
-        registerFrame.setLocationRelativeTo(null);
-        registerFrame.setVisible(true);
-    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> createLoginScreen());
