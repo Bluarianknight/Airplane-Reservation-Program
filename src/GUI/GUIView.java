@@ -30,7 +30,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 public class GUIView {
 
-    private static final String DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb\""; // Update this path
+    private static final String DB_URL = "jdbc:ucanaccess://Databases/authorization.accdb"; // Update this path
 
 
     public static boolean authenticateUser(String username, char[] password) {
@@ -38,9 +38,13 @@ public class GUIView {
              PreparedStatement ps = connection.prepareStatement("SELECT password FROM authorization WHERE username = ?")) {
 
             ps.setString(1, username);
+            System.out.println(username + " " + password);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String storedPassword = rs.getString("password");
+                    System.out.println("stored " + storedPassword);
+                    System.out.println("rs " + rs);
+                    System.out.println(Arrays.equals(password, storedPassword.toCharArray()));
                     return Arrays.equals(password, storedPassword.toCharArray());
                 }
             }
@@ -225,7 +229,7 @@ public class GUIView {
             String username = userNameField.getText();
             char[] password = passwordField.getPassword();
 
-            if (GUIView.authenticateUser(username, String(password))) {
+            if (GUIView.authenticateUser(username, password)) {
                 JOptionPane.showMessageDialog(null, "Login Successful!");
                 loginFrame.dispose(); // Close the login window
                 createMainFrame(); // Open the main GUI
