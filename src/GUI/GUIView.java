@@ -1,5 +1,6 @@
 package GUI;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,10 +29,11 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+
 public class GUIView {
 
-    private static final String DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb"; // Update this path
-    private static final String MAIN_DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb";// Update this path 
+    private static final String DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb"; // Update this path for the login database
+    private static final String MAIN_DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb";
 
 
     public static boolean authenticateUser(String username, char[] password) {
@@ -194,8 +196,8 @@ public class GUIView {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
-    private static void UserInformation() {
+    @SuppressWarnings("unused")
+    private void displayUserInformation() {
         JFrame frame = new JFrame("User Information Management");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new GridBagLayout());
@@ -206,53 +208,68 @@ public class GUIView {
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // User information fields
         JTextField fNameField = new JTextField(20);
         JTextField lNameField = new JTextField(20);
         JTextField emailField = new JTextField(20);
 
-        // Adding components to the frame
-        frame.add(new JLabel("First Name:"), gbc);
-        gbc.gridx++;
-        frame.add(fNameField, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        frame.add(new JLabel("Last Name:"), gbc);
-        gbc.gridx++;
-        frame.add(lNameField, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        frame.add(new JLabel("Email:"), gbc);
-        gbc.gridx++;
-        frame.add(emailField, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
+        // Fetch and display the user's current information
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = connection.prepareStatement("SELECT fName, lName, email FROM Customer WHERE ID = ?")) {
+            java.lang.String loggedInUser = null;
+            ps.setString(1, loggedInUser);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                fNameField.setText(rs.getString("fName"));
+                lNameField.setText(rs.getString("lName"));
+                emailField.setText(rs.getString("Email"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
 
-        JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(e -> updateUserInformation(fNameField.getText(), lNameField.getText(), emailField.getText(), frame));
-        frame.add(submitButton, gbc);
+        // Add components to the frame for displaying and updating user information
+        addComponentsToFrame(frame, new JLabel("First Name:"), fNameField, gbc);
+        addComponentsToFrame(frame, new JLabel("Last Name:"), lNameField, gbc);
+        addComponentsToFrame(frame, new JLabel("Email:"), emailField, gbc);
+
+        JButton updateButton = new JButton("Update");
+        updateButton.addActionListener(e -> updateUserInformation(fNameField.getText(), lNameField.getText(), emailField.getText(), frame));
+        gbc.gridwidth = 2;
+        frame.add(updateButton, gbc);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
-    private static void updateUserInformation(String fName, String lName, String email, JFrame frame) {
-        try (Connection connection = DriverManager.getConnection(MAIN_DB_URL);
-             PreparedStatement ps = connection.prepareStatement("INSERT INTO Users (fName, lName, Email) VALUES (?, ?, ?)")) {
+    private void addComponentsToFrame(JFrame frame, Component label, Component field, GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        frame.add(label, gbc);
+        gbc.gridx++;
+        frame.add(field, gbc);
+        gbc.gridy++;
+    }
 
+    private static void updateUserInformation(String fName, String lName, String email, JFrame frame) {
+        // Update user information in the database
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = connection.prepareStatement("UPDATE Customer SET fName = ?, lName = ?, email = ? WHERE ID = ?")) {
             ps.setString(1, fName);
             ps.setString(2, lName);
             ps.setString(3, email);
+            java.lang.String loggedInUser = null;
+            ps.setString(4, loggedInUser);
             ps.executeUpdate();
-
             JOptionPane.showMessageDialog(frame, "Information updated successfully.");
         } catch (SQLException ex) {
-            ex.printStackTrace();
             JOptionPane.showMessageDialog(frame, "Error updating information: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    public static void main1(String[] args) {
+        new GUIView();
+    }
+
 
     private static void createLoginScreen() {
         JFrame loginFrame = new JFrame("Login");
@@ -306,15 +323,12 @@ public class GUIView {
         loginFrame.setVisible(true);
     }
 
-
     private static char[] String(char[] password) {
         // TODO Auto-generated method stub
         return null;
     }
 
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> createLoginScreen());
     }
 }
-
