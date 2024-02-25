@@ -52,7 +52,7 @@ public class GUIModel {
 		dataconnect("auth");
 		try {
 			statement = connection.createStatement();
-			PreparedStatement userCheck = connection.prepareStatement("SELECT COUNT(*) FROM Users WHERE username = ?")
+			PreparedStatement userCheck = connection.prepareStatement("SELECT COUNT(*) FROM Users WHERE username = ?");
 			
 			while (result.next()) {
 				
@@ -83,7 +83,7 @@ public class GUIModel {
 		dataconnect("auth");
 		try {
 			statement = connection.createStatement();
-			PreparedStatement userCheck = connection.prepareStatement("SELECT COUNT(*) FROM Users WHERE username = ?")
+			PreparedStatement userCheck = connection.prepareStatement("SELECT COUNT(*) FROM Users WHERE username = ?");
 			
 			while (result.next()) {
 				
