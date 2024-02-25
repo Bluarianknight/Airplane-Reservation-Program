@@ -30,7 +30,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 public class GUIView {
 
-    private static final String DB_URL = "jdbc:ucanaccess://Databases/authorization.accdb"; // Update this path
+    private static final String DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb"; // Update this path
+    private static final String MAIN_DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb";// Update this path 
 
 
     public static boolean authenticateUser(String username, char[] password) {
@@ -193,6 +194,66 @@ public class GUIView {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    private static void UserInformation() {
+        JFrame frame = new JFrame("User Information Management");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // User information fields
+        JTextField fNameField = new JTextField(20);
+        JTextField lNameField = new JTextField(20);
+        JTextField emailField = new JTextField(20);
+
+        // Adding components to the frame
+        frame.add(new JLabel("First Name:"), gbc);
+        gbc.gridx++;
+        frame.add(fNameField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        frame.add(new JLabel("Last Name:"), gbc);
+        gbc.gridx++;
+        frame.add(lNameField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        frame.add(new JLabel("Email:"), gbc);
+        gbc.gridx++;
+        frame.add(emailField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> updateUserInformation(fNameField.getText(), lNameField.getText(), emailField.getText(), frame));
+        frame.add(submitButton, gbc);
+
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    private static void updateUserInformation(String fName, String lName, String email, JFrame frame) {
+        try (Connection connection = DriverManager.getConnection(MAIN_DB_URL);
+             PreparedStatement ps = connection.prepareStatement("INSERT INTO Users (fName, lName, Email) VALUES (?, ?, ?)")) {
+
+            ps.setString(1, fName);
+            ps.setString(2, lName);
+            ps.setString(3, email);
+            ps.executeUpdate();
+
+            JOptionPane.showMessageDialog(frame, "Information updated successfully.");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error updating information: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private static void createLoginScreen() {
         JFrame loginFrame = new JFrame("Login");
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
