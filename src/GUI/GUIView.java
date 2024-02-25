@@ -40,14 +40,9 @@ public class GUIView {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    String storedPasswordHash = rs.getString("password");
-                    MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                    byte[] hashedPassword = digest.digest(new String(password).getBytes(StandardCharsets.UTF_8));
-                    return Arrays.equals(hashedPassword, storedPasswordHash.getBytes(StandardCharsets.UTF_8));
+                    String storedPassword = rs.getString("password");
+                    return Arrays.equals(password, storedPassword.toCharArray());
                 }
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-                return false; // If the algorithm isn't found, authentication cannot proceed
             }
         } catch (SQLException e) {
             e.printStackTrace();
