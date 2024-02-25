@@ -47,12 +47,43 @@ public class GUIModel {
 		
 	}
 	
-	public ArrayList<ArrayList<String>> sendAuthQuery(String query) { // Gets the queried information in an arraylist from the authorization database.
+	public ArrayList<ArrayList<String>> sendAuthCheck(String username) { // Gets the queried information in an arraylist from the authorization database.
 		ArrayList<ArrayList<String>> returnedList = new ArrayList<ArrayList<String>>();
 		dataconnect("auth");
 		try {
 			statement = connection.createStatement();
-			result = statement.executeQuery(query);
+			PreparedStatement userCheck = connection.prepareStatement("SELECT COUNT(*) FROM Users WHERE username = ?")
+			
+			while (result.next()) {
+				
+				ArrayList<String> provided = new ArrayList<String>();
+				int id = result.getInt(1);
+				provided.add(String.valueOf(id));
+				String fName = result.getString(2);
+				provided.add(fName);
+				String lName = result.getString(3);
+				provided.add(lName);
+				String pass = result.getString(4);
+				provided.add(pass);
+				System.out.println(provided);
+				returnedList.add(provided);
+				
+				
+			}
+		} catch (SQLException sqlex) {
+			JOptionPane.showMessageDialog(null, sqlex);
+		}
+		return returnedList;
+		
+	}
+	
+	
+	public ArrayList<ArrayList<String>> sendAuthQuery(String username) { // Gets the queried information in an arraylist from the authorization database.
+		ArrayList<ArrayList<String>> returnedList = new ArrayList<ArrayList<String>>();
+		dataconnect("auth");
+		try {
+			statement = connection.createStatement();
+			PreparedStatement userCheck = connection.prepareStatement("SELECT COUNT(*) FROM Users WHERE username = ?")
 			
 			while (result.next()) {
 				
