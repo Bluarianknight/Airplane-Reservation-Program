@@ -1,6 +1,5 @@
 package GUI;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -8,19 +7,13 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,9 +30,8 @@ import javax.swing.SwingUtilities;
 
 public class GUIView {
 
-    private static final String DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb"; // Update this path for the login database
-    private static final String MAIN_DB_URL = "jdbc:ucanaccess:\"C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\authorization.accdb";
-
+    private static final String DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/authorization.accdb"; // Update this path for the login database
+    private static final String MAIN_DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/mainDatabase.accdb";
 
     public static boolean authenticateUser(String username, char[] password) {
         try (Connection connection = DriverManager.getConnection(DB_URL.replace("\"", "")); // Fixed the DB_URL
@@ -118,7 +110,7 @@ public class GUIView {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 10, 10, 5); // Top, left, bottom, right padding
+        gbc.insets = new Insets(10, 10, 10, 10); // Top, left, bottom, right padding
         frame.add(new JLabel("Departure Airport"), gbc);
 
         gbc.gridx = 1;
@@ -129,7 +121,7 @@ public class GUIView {
         // Arrival Airport
         gbc.gridx = 3;
         gbc.gridy = 0;
-        gbc.gridwidth = 1; // Reset to default
+        gbc.gridwidth = 2; // Reset to default
         frame.add(new JLabel("Arrival Airport"), gbc);
 
         gbc.gridx = 4;
@@ -150,11 +142,12 @@ public class GUIView {
 
         gbc.gridx = 11;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
         frame.add(new JLabel("Returning"), gbc);
 
         gbc.gridx = 13;
         gbc.gridy = 0;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 2;
         frame.add(new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy")), gbc);
 
         // Passengers
@@ -199,7 +192,7 @@ public class GUIView {
     }
     @SuppressWarnings("unused")
     private static void createNavigationWindow() {
-        JFrame navigationFrame = new JFrame("Customer Data Navigation");
+        JFrame navigationFrame = new JFrame("Customer Information");
         navigationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         navigationFrame.setLayout(new FlowLayout());
 
@@ -221,6 +214,7 @@ public class GUIView {
         try (Connection connection = DriverManager.getConnection(MAIN_DB_URL)) {
             PreparedStatement ps = connection.prepareStatement("SELECT ID, fName, lName FROM Customer");
             ResultSet rs = ps.executeQuery();
+            //ResultSet rs1 = ps.executeQuery();
 
             // Create a dialog to display customer names
             JDialog dialog = new JDialog(parentFrame, "Customers", true);
@@ -228,15 +222,12 @@ public class GUIView {
 
             while (rs.next()) {
                 String customerInfo = rs.getString("ID") + " - " + rs.getString("fName") + " " + rs.getString("lName");
+                String customerId = rs.getString("ID"); // Capture the ID for use in the lambda
+
                 JButton customerButton = new JButton(customerInfo);
                 customerButton.addActionListener(e -> {
                     dialog.dispose();
-                    try {
-                        displayUpdateCustomerForm(rs.getString("ID"));
-                    } catch (SQLException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
+                    displayUpdateCustomerForm(customerId); // Use captured ID directly
                 });
                 dialog.add(customerButton);
             }
@@ -293,7 +284,11 @@ public class GUIView {
                 int affectedRows = ps.executeUpdate();
                 if (affectedRows > 0) {
                     JOptionPane.showMessageDialog(frame, "Customer updated successfully.");
-                } else {
+
+                    SwingUtilities.invokeLater(() -> createMainFrame()); // Call createMainFrame directly
+                }
+
+                else {
                     JOptionPane.showMessageDialog(frame, "Error updating customer.", "Update Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
@@ -348,7 +343,7 @@ public class GUIView {
             if (GUIView.authenticateUser(username, password)) {
                 JOptionPane.showMessageDialog(null, "Login Successful!");
                 loginFrame.dispose(); // Close the login window
-                // createNavigationWindow(); // Redirect to the navigation window
+                createNavigationWindow(); // Redirect to the navigation window
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
