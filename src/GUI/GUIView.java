@@ -238,7 +238,7 @@ public class GUIView {
                 JButton customerButton = new JButton(customerInfo);
                 customerButton.addActionListener(e -> {
                     dialog.dispose();
-                    displayUpdateCustomerForm(customerId); // captured ID directly
+                    displayUpdateCustomerForm(customerId); // Use captured ID directly
                 });
                 dialog.add(customerButton);
             }
@@ -296,7 +296,7 @@ public class GUIView {
                 if (affectedRows > 0) {
                     JOptionPane.showMessageDialog(frame, "Customer updated successfully.");
 
-                    SwingUtilities.invokeLater(() -> createMainFrame()); // Call createMainFrame directly
+                    //SwingUtilities.invokeLater(() -> createMainFrame()); // Call createMainFrame directly
                 }
 
                 else {
@@ -309,7 +309,7 @@ public class GUIView {
 
         frame.add(updateButton);
 
-        // code for the Delete button
+        // New code for the Delete button
         JButton deleteButton = new JButton("Delete Account");
         deleteButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete your account?", "Delete Account", JOptionPane.YES_NO_OPTION);
@@ -321,7 +321,7 @@ public class GUIView {
                     if (affectedRows > 0) {
                         JOptionPane.showMessageDialog(frame, "Account deleted successfully.");
                         frame.dispose();
-                        SwingUtilities.invokeLater(() -> createLoginScreen());
+                        // SwingUtilities.invokeLater(() -> createLoginScreen());
                     } else {
                         JOptionPane.showMessageDialog(frame, "Error deleting account.", "Deletion Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -426,13 +426,15 @@ public class GUIView {
         });
         loginFrame.add(loginButton, gbc);
 
+
         loginFrame.pack();
         loginFrame.setLocationRelativeTo(null);
         loginFrame.setVisible(true);
     }
 
     private static void goToMainInterface() {
-        
+        // You may want to pass user information to the main frame
+        // if it's required for the user experience.
         SwingUtilities.invokeLater(() -> createMainFrame());
     }
 
