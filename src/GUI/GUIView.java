@@ -298,6 +298,30 @@ public class GUIView {
 
         frame.add(updateButton);
 
+        // New code for the Delete button
+        JButton deleteButton = new JButton("Delete Account");
+        deleteButton.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete your account?", "Delete Account", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                try (Connection connection = DriverManager.getConnection(MAIN_DB_URL)) {
+                    PreparedStatement ps = connection.prepareStatement("DELETE FROM Customer WHERE ID = ?");
+                    ps.setString(1, customerId);
+                    int affectedRows = ps.executeUpdate();
+                    if (affectedRows > 0) {
+                        JOptionPane.showMessageDialog(frame, "Account deleted successfully.");
+                        frame.dispose();
+                        SwingUtilities.invokeLater(() -> createLoginScreen());
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Error deleting account.", "Deletion Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(frame, "Error deleting account: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        frame.add(deleteButton);
+
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
