@@ -2,9 +2,12 @@ package GUI;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -37,22 +42,18 @@ public class GUIView {
 
 
     public static boolean authenticateUser(String username, char[] password) {
-        try (Connection connection = DriverManager.getConnection(DB_URL);
+        try (Connection connection = DriverManager.getConnection(DB_URL.replace("\"", "")); // Fixed the DB_URL
              PreparedStatement ps = connection.prepareStatement("SELECT password FROM authorization WHERE username = ?")) {
 
             ps.setString(1, username);
-            System.out.println(username + " " + password);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String storedPassword = rs.getString("password");
-                    System.out.println("stored " + storedPassword);
-                    System.out.println("rs " + rs);
-                    System.out.println(Arrays.equals(password, storedPassword.toCharArray()));
-                    return Arrays.equals(password, storedPassword.toCharArray());
+                    return new String(password).equals(storedPassword); // Convert char[] to String for comparison
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error connecting to the database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
         return false; // User not found or password does not match
     }
@@ -197,77 +198,114 @@ public class GUIView {
         frame.setVisible(true);
     }
     @SuppressWarnings("unused")
-    private void displayUserInformation() {
-        JFrame frame = new JFrame("User Information Management");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+    private static void createNavigationWindow() {
+        JFrame navigationFrame = new JFrame("Customer Data Navigation");
+        navigationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        navigationFrame.setLayout(new FlowLayout());
+
+        JButton viewCustomersButton = new JButton("View Customers");
+        viewCustomersButton.addActionListener(e -> displayCustomerData(navigationFrame));
+        navigationFrame.add(viewCustomersButton);
+
+        JButton updateCustomerButton = new JButton("Update Customer Data");
+        // This button now requires selection handling to determine which customer to update
+        navigationFrame.add(updateCustomerButton);
+
+        navigationFrame.pack();
+        navigationFrame.setLocationRelativeTo(null);
+        navigationFrame.setVisible(true);
+    }
+
+    // Display customer data
+    private static void displayCustomerData(JFrame parentFrame) {
+        try (Connection connection = DriverManager.getConnection(MAIN_DB_URL)) {
+            PreparedStatement ps = connection.prepareStatement("SELECT ID, fName, lName FROM Customer");
+            ResultSet rs = ps.executeQuery();
+
+            // Create a dialog to display customer names
+            JDialog dialog = new JDialog(parentFrame, "Customers", true);
+            dialog.setLayout((LayoutManager) new BoxLayout(dialog.getContentPane(), BoxLayout.Y_AXIS));
+
+            while (rs.next()) {
+                String customerInfo = rs.getString("ID") + " - " + rs.getString("fName") + " " + rs.getString("lName");
+                JButton customerButton = new JButton(customerInfo);
+                customerButton.addActionListener(e -> {
+                    dialog.dispose();
+                    try {
+                        displayUpdateCustomerForm(rs.getString("ID"));
+                    } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                });
+                dialog.add(customerButton);
+            }
+
+            dialog.pack();
+            dialog.setLocationRelativeTo(parentFrame);
+            dialog.setVisible(true);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error fetching customer data: " + ex.getMessage());
+        }
+    }
+
+    // Display form for updating customer data
+    private static void displayUpdateCustomerForm(String customerId) {
+        JFrame frame = new JFrame("Update Customer");
+        frame.setLayout(new GridLayout(0, 2));
 
         JTextField fNameField = new JTextField(20);
         JTextField lNameField = new JTextField(20);
         JTextField emailField = new JTextField(20);
 
-        // Fetch and display the user's current information
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement ps = connection.prepareStatement("SELECT fName, lName, email FROM Customer WHERE ID = ?")) {
-            java.lang.String loggedInUser = null;
-            ps.setString(1, loggedInUser);
+        frame.add(new JLabel("First Name:"));
+        frame.add(fNameField);
+        frame.add(new JLabel("Last Name:"));
+        frame.add(lNameField);
+        frame.add(new JLabel("Email:"));
+        frame.add(emailField);
+
+        // Fetch current customer data
+        try (Connection connection = DriverManager.getConnection(MAIN_DB_URL)) {
+            PreparedStatement ps = connection.prepareStatement("SELECT fName, lName, email FROM Customer WHERE ID = ?");
+            ps.setString(1, customerId);
             ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
                 fNameField.setText(rs.getString("fName"));
                 lNameField.setText(rs.getString("lName"));
-                emailField.setText(rs.getString("Email"));
+                emailField.setText(rs.getString("email"));
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error fetching customer data: " + ex.getMessage());
+            return; // Exit the method if there's an error
         }
 
-        // Add components to the frame for displaying and updating user information
-        addComponentsToFrame(frame, new JLabel("First Name:"), fNameField, gbc);
-        addComponentsToFrame(frame, new JLabel("Last Name:"), lNameField, gbc);
-        addComponentsToFrame(frame, new JLabel("Email:"), emailField, gbc);
-
+        // Update button
         JButton updateButton = new JButton("Update");
-        updateButton.addActionListener(e -> updateUserInformation(fNameField.getText(), lNameField.getText(), emailField.getText(), frame));
-        gbc.gridwidth = 2;
-        frame.add(updateButton, gbc);
+        updateButton.addActionListener(e -> {
+            try (Connection connection = DriverManager.getConnection(MAIN_DB_URL)) {
+                PreparedStatement ps = connection.prepareStatement("UPDATE Customer SET fName = ?, lName = ?, email = ? WHERE ID = ?");
+                ps.setString(1, fNameField.getText());
+                ps.setString(2, lNameField.getText());
+                ps.setString(3, emailField.getText());
+                ps.setString(4, customerId);
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    JOptionPane.showMessageDialog(frame, "Customer updated successfully.");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Error updating customer.", "Update Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(frame, "Error updating customer data: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        frame.add(updateButton);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-    private void addComponentsToFrame(JFrame frame, Component label, Component field, GridBagConstraints gbc) {
-        gbc.gridx = 0;
-        frame.add(label, gbc);
-        gbc.gridx++;
-        frame.add(field, gbc);
-        gbc.gridy++;
-    }
-
-    private static void updateUserInformation(String fName, String lName, String email, JFrame frame) {
-        // Update user information in the database
-        try (Connection connection = DriverManager.getConnection(DB_URL);
-             PreparedStatement ps = connection.prepareStatement("UPDATE Customer SET fName = ?, lName = ?, email = ? WHERE ID = ?")) {
-            ps.setString(1, fName);
-            ps.setString(2, lName);
-            ps.setString(3, email);
-            java.lang.String loggedInUser = null;
-            ps.setString(4, loggedInUser);
-            ps.executeUpdate();
-            JOptionPane.showMessageDialog(frame, "Information updated successfully.");
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(frame, "Error updating information: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public static void main1(String[] args) {
-        new GUIView();
     }
 
 
@@ -310,7 +348,7 @@ public class GUIView {
             if (GUIView.authenticateUser(username, password)) {
                 JOptionPane.showMessageDialog(null, "Login Successful!");
                 loginFrame.dispose(); // Close the login window
-                createMainFrame(); // Open the main GUI
+                // createNavigationWindow(); // Redirect to the navigation window
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
