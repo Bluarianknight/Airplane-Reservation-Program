@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import javax.swing.BoxLayout;
@@ -200,14 +201,24 @@ public class GUIView {
         viewCustomersButton.addActionListener(e -> displayCustomerData(navigationFrame));
         navigationFrame.add(viewCustomersButton);
 
-        JButton updateCustomerButton = new JButton("Update Customer Data");
-        // This button now requires selection handling to determine which customer to update
-        navigationFrame.add(updateCustomerButton);
+        JButton addUserButton = new JButton("Add User");
+        addUserButton.addActionListener(e -> displayAddUserForm());
+        navigationFrame.add(addUserButton);
 
+        // Corrected 'Login' button to go to the main interface
+        JButton loginButton = new JButton("Login");
+        loginButton.addActionListener(e -> {
+            navigationFrame.dispose(); // Dispose of the navigation frame
+            goToMainInterface(); // Call the method that creates and shows the main GUI
+        });
+        navigationFrame.add(loginButton); // Add the login button to the navigation frame
+
+        // Pack and show the frame
         navigationFrame.pack();
         navigationFrame.setLocationRelativeTo(null);
         navigationFrame.setVisible(true);
     }
+
 
     // Display customer data
     private static void displayCustomerData(JFrame parentFrame) {
@@ -227,7 +238,7 @@ public class GUIView {
                 JButton customerButton = new JButton(customerInfo);
                 customerButton.addActionListener(e -> {
                     dialog.dispose();
-                    displayUpdateCustomerForm(customerId); // Use captured ID directly
+                    displayUpdateCustomerForm(customerId); // captured ID directly
                 });
                 dialog.add(customerButton);
             }
@@ -298,7 +309,7 @@ public class GUIView {
 
         frame.add(updateButton);
 
-        // New code for the Delete button
+        // code for the Delete button
         JButton deleteButton = new JButton("Delete Account");
         deleteButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete your account?", "Delete Account", JOptionPane.YES_NO_OPTION);
@@ -325,6 +336,47 @@ public class GUIView {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private static void displayAddUserForm() {
+        JFrame addUserFrame = new JFrame("Add New Customer");
+        addUserFrame.setLayout(new GridLayout(0, 2));
+
+        JTextField fNameField = new JTextField(20);
+        JTextField lNameField = new JTextField(20);
+        JTextField emailField = new JTextField(20);
+
+        addUserFrame.add(new JLabel("First Name:"));
+        addUserFrame.add(fNameField);
+        addUserFrame.add(new JLabel("Last Name:"));
+        addUserFrame.add(lNameField);
+        addUserFrame.add(new JLabel("Email:"));
+        addUserFrame.add(emailField);
+
+        JButton addButton = new JButton("Add");
+        addButton.addActionListener(e -> {
+            try (Connection connection = DriverManager.getConnection(MAIN_DB_URL)) {
+                PreparedStatement ps = connection.prepareStatement("INSERT INTO Customer (fName, lName, email) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, fNameField.getText());
+                ps.setString(2, lNameField.getText());
+                ps.setString(3, emailField.getText());
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows > 0) {
+                    JOptionPane.showMessageDialog(addUserFrame, "New customer added successfully.");
+                    addUserFrame.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(addUserFrame, "Could not add the customer.", "Add Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(addUserFrame, "Error adding new customer: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        addUserFrame.add(addButton);
+
+        addUserFrame.pack();
+        addUserFrame.setLocationRelativeTo(null);
+        addUserFrame.setVisible(true);
     }
 
 
@@ -374,10 +426,14 @@ public class GUIView {
         });
         loginFrame.add(loginButton, gbc);
 
-
         loginFrame.pack();
         loginFrame.setLocationRelativeTo(null);
         loginFrame.setVisible(true);
+    }
+
+    private static void goToMainInterface() {
+        
+        SwingUtilities.invokeLater(() -> createMainFrame());
     }
 
     private static char[] String(char[] password) {
