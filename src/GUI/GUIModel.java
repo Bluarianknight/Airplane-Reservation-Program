@@ -16,8 +16,10 @@ import Main.testWindow;
 
 public class GUIModel {
 
-	String authData = "jdbc:ucanaccess://Databases/authorization.accdb";
-	String mainData = "jdbc:ucanaccess://Databases/mainDatabase.accdb";
+	String authDataLocation = "C:\\Database\\authorization.accdb";
+	String mainDataLocation = "C:\\Database\\mainDatabase.accdb";
+	String authData = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=" + authDataLocation;
+	String mainData = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=" + mainDataLocation;
 	Connection connection = null;
 	Statement statement = null;
 	ResultSet result = null;

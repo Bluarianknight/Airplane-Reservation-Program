@@ -6,6 +6,7 @@ public class GUIController {
 	
 	GUIModel model = new GUIModel();
 	GUIView view = new GUIView();
+	modifiedGUIView newview = new modifiedGUIView();
 	
 	public ArrayList<ArrayList<String>> QueryAuth(String query){ // Sends a query to the authorization database. It returns it in a nested arraylist.
 		return model.sendAuthQuery(query);
@@ -19,4 +20,9 @@ public class GUIController {
 		model.modifyCustQuery(query);
 	}
 
+	
+	public static void main(String[] args) {
+		
+		
+	}
 }

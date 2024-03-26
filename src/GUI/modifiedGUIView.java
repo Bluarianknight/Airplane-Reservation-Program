@@ -12,6 +12,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import java.awt.Dimension;
 
 public class modifiedGUIView extends JFrame {
 
@@ -49,17 +52,25 @@ public class modifiedGUIView extends JFrame {
 		
 		JMenuItem mnFileNew = new JMenuItem("New");
 		mnFileMenu.add(mnFileNew);
+		
+		JMenuItem mntmConnectDatabase = new JMenuItem("Connect Database");
+		mnFileMenu.add(mntmConnectDatabase);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		JPanel panel = new JPanel();
-		contentPane.add(panel);
+		JPanel listPanel = new JPanel();
+		contentPane.add(listPanel, BorderLayout.EAST);
 		
 		JList list = new JList();
-		panel.add(list);
+		listPanel.add(list);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setMinimumSize(new Dimension(230, 230));
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		listPanel.add(scrollPane);
 	}
 
 }
