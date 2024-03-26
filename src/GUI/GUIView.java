@@ -31,9 +31,8 @@ import javax.swing.SwingUtilities;
 
 public class GUIView {
 
-    private static final String DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/authorization.accdb"; // Update this path for the login database
-    private static final String MAIN_DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/mainDatabase.accdb";
-
+    private static final String DB_URL = "jdbc:ucanaccess://Databases/authorization.accdb"; // Update this path for the login database
+    private static final String MAIN_DB_URL = "jdbc:ucanaccess://Databases/mainDatabase.accdb";
     public static boolean authenticateUser(String username, char[] password) {
         try (Connection connection = DriverManager.getConnection(DB_URL.replace("\"", "")); // Fixed the DB_URL
              PreparedStatement ps = connection.prepareStatement("SELECT password FROM authorization WHERE username = ?")) {
