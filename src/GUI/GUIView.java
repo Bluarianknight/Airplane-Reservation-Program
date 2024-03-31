@@ -7,15 +7,23 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.Vector;
+
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -28,11 +36,41 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.text.MaskFormatter;
+
 
 public class GUIView {
 
-    private static final String DB_URL = "jdbc:ucanaccess://Database/authorization.accdb"; // Update this path for the login database
-    private static final String MAIN_DB_URL = "jdbc:ucanaccess://Database/mainDatabase.accdb";
+    private static final String DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/authorization.accdb"; // Update this path for the login database
+    private static final String MAIN_DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/mainDatabase.accdb";
+    private static final String AIRPORT_DB_URL = "jdbc:ucanaccess://C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\Airport.accdb";
+
+
+    // Method to establish connection to the Airport database
+    private static Connection getAirportDBConnection() throws SQLException {
+        return DriverManager.getConnection(AIRPORT_DB_URL);
+    }
+
+    public static Vector<String> getAirportNames() {
+        Vector<String> airportNames = new Vector<>();
+        String query = "SELECT Name FROM Airport "; // Make sure the table name is also correct
+
+        try (Connection connection = getAirportDBConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+
+            while (resultSet.next()) {
+                // Ensure that the column name here matches the name used in the SELECT statement
+                airportNames.add(resultSet.getString("Name")); // This needs to match the exact column name from the query
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching airport names: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return airportNames;
+    }
+
+
     public static boolean authenticateUser(String username, char[] password) {
         try (Connection connection = DriverManager.getConnection(DB_URL.replace("\"", "")); // Fixed the DB_URL
              PreparedStatement ps = connection.prepareStatement("SELECT password FROM authorization WHERE username = ?")) {
@@ -100,96 +138,155 @@ public class GUIView {
     private static void createMainFrame() {
         JFrame frame = new JFrame("Flight Search");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(1100, 200)); // Set the size to match your layout preference
-
-        // Use GridBagLayout for flexibility
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        // Departure Airport
+        // Initialize airportNames vector with database values
+        Vector<String> airportNames = getAirportNames();
+
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10); // Consistent padding
+        gbc.weightx = 0.5;
+        gbc.weighty = 0; // No vertical stretching
+
+        // Departure Airport
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(10, 10, 10, 10); // Top, left, bottom, right padding
         frame.add(new JLabel("Departure Airport"), gbc);
 
+        JComboBox<String> cmbDepartureAirport = new JComboBox<>(new DefaultComboBoxModel<>(airportNames));
+        JTextField txtDepartureAirport = (JTextField) cmbDepartureAirport.getEditor().getEditorComponent();
+        setupAutoComplete(txtDepartureAirport, cmbDepartureAirport);
         gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2; // Text field spans two columns
-        frame.add(new JTextField(""), gbc);
+        frame.add(cmbDepartureAirport, gbc);
 
         // Arrival Airport
-        gbc.gridx = 3;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2; // Reset to default
+        gbc.gridx = 2;
         frame.add(new JLabel("Arrival Airport"), gbc);
 
-        gbc.gridx = 4;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2; // Text field spans two columns
-        frame.add(new JTextField(), gbc);
+        JComboBox<String> cmbArrivalAirport = new JComboBox<>(new DefaultComboBoxModel<>(airportNames));
+        JTextField txtArrivalAirport = (JTextField) cmbArrivalAirport.getEditor().getEditorComponent();
+        setupAutoComplete(txtArrivalAirport, cmbArrivalAirport);
+        gbc.gridx = 3;
+        frame.add(cmbArrivalAirport, gbc);
 
         // Departing and Returning Dates
+        MaskFormatter dateFormatter;
+        try {
+            dateFormatter = new MaskFormatter("##/##/####");
+            dateFormatter.setPlaceholderCharacter('_');
+            dateFormatter.setValidCharacters("0123456789/");
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(frame, "Error creating date formatter: " + e.getMessage(), "Formatter Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        gbc.gridx = 4;
+        frame.add(new JLabel("Departing Date"), gbc);
+
+        gbc.gridx = 5;
+        JFormattedTextField departingDateField = new JFormattedTextField(dateFormatter);
+        frame.add(departingDateField, gbc);
+
         gbc.gridx = 6;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1; // Reset to default
-        frame.add(new JLabel("Departing"), gbc);
+        frame.add(new JLabel("Returning Date"), gbc);
 
         gbc.gridx = 7;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        frame.add(new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy")), gbc);
-
-        gbc.gridx = 11;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        frame.add(new JLabel("Returning"), gbc);
-
-        gbc.gridx = 13;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        frame.add(new JFormattedTextField(new SimpleDateFormat("dd MMM yyyy")), gbc);
+        JFormattedTextField returningDateField = new JFormattedTextField(dateFormatter);
+        frame.add(returningDateField, gbc);
 
         // Passengers
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.gridwidth = 1; // Span one column
         frame.add(new JLabel("Passengers:"), gbc);
 
-        gbc.gridx = 1; // Move to the next cell on the right for the button
-        gbc.gridy = 1; // Keep it on the same row
+        // Choose Passengers Button
+        gbc.gridx = 1;
         JButton passengersButton = new JButton("Choose Passengers");
         passengersButton.addActionListener(e -> displayPassengerSelection(frame));
         frame.add(passengersButton, gbc);
 
         // Class
-        gbc.gridx = 3;
-        gbc.gridy = 1;
+        gbc.gridx = 2;
         frame.add(new JLabel("Class"), gbc);
 
-        String[] classOptions = {"Economy Class", "Business Class", "First Class"};
-        gbc.gridx = 4;
-        gbc.gridy = 1;
-        frame.add(new JComboBox<>(classOptions), gbc);
+        gbc.gridx = 3;
+        frame.add(new JComboBox<>(new String[]{"Economy Class", "Business Class", "First Class"}), gbc);
 
-        // Search Button
+        // Initialize the adultsSpinner
+        gbc.gridx = 0;
+        gbc.gridy = 1; // Adjust the row as per your design
+        gbc.gridwidth = 1;
+        JSpinner adultsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 9, 1));
+        frame.add(adultsSpinner, gbc);
+
+
+        // Search Button setup
         JButton searchButton = new JButton("Search flights");
         searchButton.setBackground(Color.RED);
         searchButton.setForeground(Color.WHITE);
         searchButton.setOpaque(true);
         searchButton.setBorderPainted(false);
-
-        gbc.gridx = 6;
+        gbc.gridx = 6; // Adjust gridx, gridy as needed
         gbc.gridy = 1;
-        gbc.gridwidth = 3; // Button spans three columns
-        gbc.insets = new Insets(10, 5, 10, 10); // Top, left, bottom, right padding
+        gbc.gridwidth = 2; // Spans across two columns
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Validation to check if all information is present
+                if (((SpinnerNumberModel) adultsSpinner.getModel()).getNumber().intValue() <= 0) {
+                    JOptionPane.showMessageDialog(frame, "Please select at least one adult.");
+                } else {
+                    // Proceed with flight search
+                    // This is where you'd implement the actual search logic
+                    JOptionPane.showMessageDialog(frame, "Searching for flights...");
+                }
+            }
+        });
         frame.add(searchButton, gbc);
-
+        frame.add(searchButton, gbc);
         // Set the frame to be visible
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    private static void setupAutoComplete(JTextField txtDepartureAirport,
+                                          JComboBox<java.lang.String> cmbDepartureAirport) {
+        // TODO Auto-generated method stub
+
+    }
+
+    // Method to filter ComboBox items based on text field input
+    private static void comboFilter(String enteredText, JComboBox<String> comboBox) {
+        if (enteredText.isEmpty()) {
+            comboBox.setModel(new DefaultComboBoxModel<>(getAirportNames()));
+            comboBox.hidePopup();
+        } else {
+            Vector<String> filteredItems = new Vector<>();
+            for (String item : getAirportNames()) {
+                if (item.toLowerCase().startsWith(enteredText.toLowerCase())) {
+                    filteredItems.add(item);
+                }
+            }
+            if (!filteredItems.isEmpty()) {
+                comboBox.setModel(new DefaultComboBoxModel<>(filteredItems));
+                comboBox.setSelectedItem(enteredText);
+                comboBox.showPopup();
+            } else {
+                comboBox.hidePopup();
+            }
+        }
+    }
+
+    // Method to filter combo box items based on text field input
+    private static void comboFilter(String enteredText, Vector<String> items) {
+
+        System.out.println("User typed: " + enteredText);
+        // In a real application, you would update a pop-up list or similar widget
+    }
+
+
     @SuppressWarnings("unused")
     private static void createNavigationWindow() {
         JFrame navigationFrame = new JFrame("Customer Information");
@@ -432,8 +529,7 @@ public class GUIView {
     }
 
     private static void goToMainInterface() {
-        // You may want to pass user information to the main frame
-        // if it's required for the user experience.
+
         SwingUtilities.invokeLater(() -> createMainFrame());
     }
 
