@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 
@@ -19,7 +20,7 @@ public class newGUIModelWindow {
 	Connection connection = null;
 	Statement statement = null;
 	ResultSet result = null;
-	
+
 	
 	public void Connect(String database) {
 		if (database == "auth") {
@@ -44,36 +45,31 @@ public class newGUIModelWindow {
 		
 	}
 	
-	public flightList getFlightData() {
-		flightList flight = new flightList();
+	public DefaultListModel<flightList> getFlightData() {
 		
+		DefaultListModel<flightList> listModel = new DefaultListModel<flightList>();
 		try {
 			Connect("");
 			String strString = "SELECT * FROM Flights";
 			statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			result = statement.executeQuery(strString);
 			result.beforeFirst();
-			System.out.println("");
+			
 			while (result.next()) {
-				flight.ID.add(result.getInt(1));
-				flight.model.add(result.getString(2));
-				flight.ArrivalAirport.add(result.getString(3));
-				flight.DepartureAirport.add(result.getString(4));
-				flight.TimeLeft.add(result.getString(4));
-				flight.TimeArrived.add(result.getString(5));
-				System.out.print(result.getString(2) + " ");
-				System.out.println(result.getString(3) + " ");
+				listModel.addElement(new flightList(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5), result.getString(6)));
 			}
 			
 		} catch (SQLException sqlex) {
 			JOptionPane.showMessageDialog(null, sqlex);
 		}
-		return flight;
+		flightList test = listModel.elementAt(0);
+		System.out.println(test.ArrivalAirport);
+		return listModel;
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		newGUIModelWindow x = new newGUIModelWindow();
-		x.getData();
+		x.getFlightData();
 		
 
 	}

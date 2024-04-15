@@ -44,6 +44,7 @@ public class newGUIViewWindow {
 	 */
 	public newGUIViewWindow() {
 		initialize();
+		loadList();
 		
 	}
 
@@ -163,6 +164,7 @@ public class newGUIViewWindow {
 	}
 	
 	public void loadList() {
-		listFlightList = control.getFlightData();
+		listModel = control.getFlightData();
+		listFlightList.setModel(listModel);
 	}
 }
