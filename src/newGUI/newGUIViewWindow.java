@@ -5,12 +5,14 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.SpringLayout;
 import javax.swing.JPanel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JList;
 import java.awt.Color;
+import javax.swing.JTextPane;
 
 public class newGUIViewWindow {
 
@@ -21,6 +23,9 @@ public class newGUIViewWindow {
 	 */
 	
 	newGUIControllerWindow control = new newGUIControllerWindow();
+	JList<flightList> listFlightList = new JList<flightList>();
+	DefaultListModel<flightList> listModel = new DefaultListModel<>();
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -39,6 +44,7 @@ public class newGUIViewWindow {
 	 */
 	public newGUIViewWindow() {
 		initialize();
+		
 	}
 
 	/**
@@ -95,26 +101,58 @@ public class newGUIViewWindow {
 		lblWelcome.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		mainPanel.add(lblWelcome);
 		
-		JList flightList = new JList();
-		sl_mainPanel.putConstraint(SpringLayout.NORTH, flightList, 100, SpringLayout.NORTH, mainPanel);
-		sl_mainPanel.putConstraint(SpringLayout.WEST, flightList, 139, SpringLayout.WEST, mainPanel);
-		sl_mainPanel.putConstraint(SpringLayout.SOUTH, flightList, -10, SpringLayout.SOUTH, mainPanel);
-		sl_mainPanel.putConstraint(SpringLayout.EAST, flightList, -212, SpringLayout.EAST, mainPanel);
-		mainPanel.add(flightList);
+		listFlightList.setModel(listModel);
+		sl_mainPanel.putConstraint(SpringLayout.NORTH, listFlightList, 100, SpringLayout.NORTH, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, listFlightList, 139, SpringLayout.WEST, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, listFlightList, -10, SpringLayout.SOUTH, mainPanel);
+		sl_mainPanel.putConstraint(SpringLayout.EAST, listFlightList, -212, SpringLayout.EAST, mainPanel);
+		mainPanel.add(listFlightList);
 		
 		JLabel lblFlightListing = new JLabel("Flight Listings");
 		sl_mainPanel.putConstraint(SpringLayout.WEST, lblFlightListing, 186, SpringLayout.WEST, mainPanel);
-		sl_mainPanel.putConstraint(SpringLayout.SOUTH, lblFlightListing, -6, SpringLayout.NORTH, flightList);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, lblFlightListing, -6, SpringLayout.NORTH, listFlightList);
 		lblFlightListing.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		mainPanel.add(lblFlightListing);
 		
 		JPanel panel = new JPanel();
-		panel.setBackground(Color.LIGHT_GRAY);
+		panel.setBackground(Color.WHITE);
 		sl_mainPanel.putConstraint(SpringLayout.NORTH, panel, 48, SpringLayout.NORTH, mainPanel);
-		sl_mainPanel.putConstraint(SpringLayout.WEST, panel, 24, SpringLayout.EAST, flightList);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, panel, 24, SpringLayout.EAST, listFlightList);
 		sl_mainPanel.putConstraint(SpringLayout.SOUTH, panel, 217, SpringLayout.NORTH, mainPanel);
 		sl_mainPanel.putConstraint(SpringLayout.EAST, panel, -26, SpringLayout.EAST, mainPanel);
 		mainPanel.add(panel);
+		SpringLayout sl_panel = new SpringLayout();
+		panel.setLayout(sl_panel);
+		
+		JLabel lblFlightID = new JLabel("Flight ID:");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblFlightID, 10, SpringLayout.NORTH, panel);
+		sl_panel.putConstraint(SpringLayout.WEST, lblFlightID, 10, SpringLayout.WEST, panel);
+		panel.add(lblFlightID);
+		
+		JLabel lblSelID = new JLabel("X");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblSelID, 0, SpringLayout.NORTH, lblFlightID);
+		sl_panel.putConstraint(SpringLayout.WEST, lblSelID, 6, SpringLayout.EAST, lblFlightID);
+		panel.add(lblSelID);
+		
+		JLabel lblDepart = new JLabel("Departure Time:");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblDepart, 5, SpringLayout.SOUTH, lblFlightID);
+		sl_panel.putConstraint(SpringLayout.WEST, lblDepart, 0, SpringLayout.WEST, lblFlightID);
+		panel.add(lblDepart);
+		
+		JLabel lblArrivalTime = new JLabel("Arrival Time:");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblArrivalTime, 6, SpringLayout.SOUTH, lblDepart);
+		sl_panel.putConstraint(SpringLayout.WEST, lblArrivalTime, 0, SpringLayout.WEST, lblFlightID);
+		panel.add(lblArrivalTime);
+		
+		JLabel lblSelDep = new JLabel("X");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblSelDep, 0, SpringLayout.NORTH, lblDepart);
+		sl_panel.putConstraint(SpringLayout.WEST, lblSelDep, 6, SpringLayout.EAST, lblDepart);
+		panel.add(lblSelDep);
+		
+		JLabel lblSelArrive = new JLabel("X");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblSelArrive, 6, SpringLayout.SOUTH, lblDepart);
+		sl_panel.putConstraint(SpringLayout.WEST, lblSelArrive, 6, SpringLayout.EAST, lblArrivalTime);
+		panel.add(lblSelArrive);
 		
 		JLabel lblInfoMain = new JLabel("Information");
 		sl_mainPanel.putConstraint(SpringLayout.NORTH, lblInfoMain, -1, SpringLayout.NORTH, lblWelcome);
@@ -122,5 +160,9 @@ public class newGUIViewWindow {
 		lblInfoMain.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		mainPanel.add(lblInfoMain);
 		frmAirlineReservationProgram.getContentPane().add(btnHome);
+	}
+	
+	public void loadList() {
+		listFlightList = control.getFlightData();
 	}
 }
