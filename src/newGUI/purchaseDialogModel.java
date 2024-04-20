@@ -2,6 +2,7 @@ package newGUI;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,9 +10,8 @@ import java.sql.Statement;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
-
-
-public class newGUIModelWindow {
+public class purchaseDialogModel {
+	
 	String authDataLocation = "C://Database//authorization.accdb";
 	String mainDataLocation = "C://Database//mainDatabase.accdb";
 	String connectString = "jdbc:ucanaccess://";
@@ -45,9 +45,27 @@ public class newGUIModelWindow {
 		
 	}
 	
-	public DefaultListModel<flightList> getFlightData() {
+	public void setReservationData(reservation newReservation) {
+		reservation res = newReservation;
+		try {
+			Connect("");
+			PreparedStatement prep = connection.prepareStatement("INSERT into purchase (firstname, lastname, ccnumber, ccexpire, ccsecurity, tickets) values (?, ?, ?, ?, ?, ?)");
+			prep.setString(1, res.firstName);
+			prep.setString(2, res.lastName);
+			prep.setString(3, res.cc);
+			prep.setString(4, res.ccExp);
+			prep.setInt(5, res.ccSecurity);
+			prep.setInt(6, res.tickets);
+			prep.execute();
+			
+		} catch (SQLException sqlex) {
+			JOptionPane.showMessageDialog(null, sqlex);
+		}
+	}
+	
+	public DefaultListModel<reservation> getReservationData() {
 		
-		DefaultListModel<flightList> listModel = new DefaultListModel<flightList>();
+		DefaultListModel<reservation> listModel = new DefaultListModel<reservation>();
 		try {
 			Connect("");
 			String strString = "SELECT * FROM Flights";
@@ -56,22 +74,14 @@ public class newGUIModelWindow {
 			result.beforeFirst();
 			
 			while (result.next()) {
-				listModel.addElement(new flightList(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getTime(5), result.getTime(6), result.getBigDecimal(7)));
+				listModel.addElement(new reservation(result.getString(1), result.getString(2), result.getString(3), result.getString(4), result.getInt(5), result.getInt(6)));
 			}
 			
 		} catch (SQLException sqlex) {
 			JOptionPane.showMessageDialog(null, sqlex);
 		}
-		flightList test = listModel.elementAt(0);
-		System.out.println(test.ArrivalAirport);
+		reservation test = listModel.elementAt(0);
+		System.out.println(test.firstName);
 		return listModel;
 	}
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		newGUIModelWindow x = new newGUIModelWindow();
-		x.getFlightData();
-		
-
-	}
-	
 }

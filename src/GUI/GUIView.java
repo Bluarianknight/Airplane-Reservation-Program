@@ -40,9 +40,10 @@ import javax.swing.text.MaskFormatter;
 
 
 public class GUIView {
-
-    private static final String DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/authorization.accdb"; // Update this path for the login database
-    private static final String MAIN_DB_URL = "jdbc:ucanaccess://C:/Users/Pkalp/OneDrive/Desktop/Airplane-Reservation-Program/Databases/mainDatabase.accdb";
+	String authDataLocation = "C://Database//authorization.accdb";
+	String mainDataLocation = "C://Database//mainDatabase.accdb";
+    private static final String DB_URL = "jdbc:ucanaccess://C://Database//authorization.accdb"; // Update this path for the login database
+    private static final String MAIN_DB_URL = "jdbc:ucanaccess://C://Database//mainDatabase.accdb";
     private static final String AIRPORT_DB_URL = "jdbc:ucanaccess://C:\\Users\\Pkalp\\OneDrive\\Desktop\\Airplane-Reservation-Program\\Databases\\Airport.accdb";
 
 

@@ -1,5 +1,7 @@
 package newGUI;
 
+import java.math.BigDecimal;
+import java.sql.Time;
 import java.util.List;
 
 public class flightList {
@@ -8,20 +10,22 @@ public class flightList {
 	String model;
 	String ArrivalAirport;
 	String DepartureAirport;
-	String TimeLeft;
-	String TimeArrived;
+	Time TimeLeft;
+	Time TimeArrived;
+	BigDecimal cost;
 	
 	public flightList() {
 		
 	}
 	
-	public flightList(Integer newID, String newModel, String arrived, String depart, String timelefted, String timearrive) {
+	public flightList(Integer newID, String newModel, String arrived, String depart, Time timelefted, Time timearrive, BigDecimal newMoney) {
 		this.ID = newID;
 		this.model = newModel;
 		this.ArrivalAirport = arrived;
 		this.DepartureAirport = depart;
 		this.TimeLeft = timelefted;
 		this.TimeArrived = timearrive;
+		this.cost = newMoney;
 	}
 	
 	

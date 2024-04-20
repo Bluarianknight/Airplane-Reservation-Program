@@ -25,6 +25,7 @@ public class newGUIViewWindow {
 	newGUIControllerWindow control = new newGUIControllerWindow();
 	JList<flightList> listFlightList = new JList<flightList>();
 	DefaultListModel<flightList> listModel = new DefaultListModel<>();
+	flightList selected;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -102,12 +103,16 @@ public class newGUIViewWindow {
 		lblWelcome.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		mainPanel.add(lblWelcome);
 		
+		
+		
 		listFlightList.setModel(listModel);
 		sl_mainPanel.putConstraint(SpringLayout.NORTH, listFlightList, 100, SpringLayout.NORTH, mainPanel);
 		sl_mainPanel.putConstraint(SpringLayout.WEST, listFlightList, 139, SpringLayout.WEST, mainPanel);
 		sl_mainPanel.putConstraint(SpringLayout.SOUTH, listFlightList, -10, SpringLayout.SOUTH, mainPanel);
 		sl_mainPanel.putConstraint(SpringLayout.EAST, listFlightList, -212, SpringLayout.EAST, mainPanel);
 		mainPanel.add(listFlightList);
+		
+		
 		
 		JLabel lblFlightListing = new JLabel("Flight Listings");
 		sl_mainPanel.putConstraint(SpringLayout.WEST, lblFlightListing, 186, SpringLayout.WEST, mainPanel);
@@ -161,7 +166,43 @@ public class newGUIViewWindow {
 		lblInfoMain.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		mainPanel.add(lblInfoMain);
 		frmAirlineReservationProgram.getContentPane().add(btnHome);
+		
+		
+		
+			
+		JLabel lblCost = new JLabel("Cost:");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblCost, 6, SpringLayout.SOUTH, lblArrivalTime);
+		sl_panel.putConstraint(SpringLayout.WEST, lblCost, 0, SpringLayout.WEST, lblFlightID);
+		panel.add(lblCost);
+		
+		JLabel lblSelCost = new JLabel("x");
+		sl_panel.putConstraint(SpringLayout.NORTH, lblSelCost, 6, SpringLayout.SOUTH, lblArrivalTime);
+		sl_panel.putConstraint(SpringLayout.WEST, lblSelCost, 6, SpringLayout.EAST, lblCost);
+		panel.add(lblSelCost);
+			
+		listFlightList.addListSelectionListener(e -> {
+			selected = listFlightList.getSelectedValue();
+			lblSelID.setText(String.valueOf(selected.ID));
+			lblSelDep.setText(selected.TimeLeft.toString());
+			lblSelArrive.setText(selected.TimeArrived.toString());
+			lblSelCost.setText("$" + selected.cost.toString());
+		});
+		
+		JButton btnNewButton = new JButton("Buy a Ticket");
+		sl_mainPanel.putConstraint(SpringLayout.NORTH, btnNewButton, 6, SpringLayout.SOUTH, panel);
+		sl_mainPanel.putConstraint(SpringLayout.WEST, btnNewButton, 24, SpringLayout.EAST, listFlightList);
+		sl_mainPanel.putConstraint(SpringLayout.SOUTH, btnNewButton, 41, SpringLayout.SOUTH, panel);
+		sl_mainPanel.putConstraint(SpringLayout.EAST, btnNewButton, 0, SpringLayout.EAST, panel);
+		mainPanel.add(btnNewButton);
+		btnNewButton.addActionListener(e ->{
+			purchaseDialogView newPurchase = new purchaseDialogView(selected);
+		});
+		
+		
 	}
+	
+	
+	
 	
 	public void loadList() {
 		listModel = control.getFlightData();
