@@ -133,4 +133,9 @@ public class newGUIModelWindow {
 		return false;
 	}
 
+	public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

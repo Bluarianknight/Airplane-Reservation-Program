@@ -1,23 +1,22 @@
 package newGUI;
 
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 
-import javax.swing.JFrame;
-import javax.swing.SpringLayout;
-import javax.swing.JPanel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.JList;
-import java.awt.Color;
-import javax.swing.JTextPane;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 public class newGUIViewWindow {
 
-	private JFrame frmAirlineReservationProgram;
+	private static JFrame frmAirlineReservationProgram;
 
 	/**
 	 * Launch the application.
@@ -35,17 +34,17 @@ public class newGUIViewWindow {
 	JLabel lblSelCost = new JLabel("x");
 	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					newGUIViewWindow window = new newGUIViewWindow();
-					window.frmAirlineReservationProgram.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+        EventQueue.invokeLater(() -> {
+            newGUIModelWindow model = new newGUIModelWindow();
+            if (LoginView.requestLogin(model)) { // Make sure to pass 'model' as the argument
+                newGUIViewWindow window = new newGUIViewWindow();
+                window.frmAirlineReservationProgram.setVisible(true);
+            } else {
+                System.exit(0); // Exit if login is unsuccessful
+            }
+        });
+    }
+
 
 	/**
 	 * Create the application.
@@ -273,7 +272,7 @@ public class newGUIViewWindow {
         listFlightList.setModel(listModel);
     }
 
-    public void setVisible(boolean b) {
+    public static void setVisible(boolean b) {
         frmAirlineReservationProgram.setVisible(b);
     }
 }

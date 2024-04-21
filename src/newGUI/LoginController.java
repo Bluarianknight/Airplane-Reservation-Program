@@ -1,5 +1,6 @@
 package newGUI;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 import Customer.Customer;
@@ -7,20 +8,19 @@ import Customer.Customer;
 public class LoginController {
     private newGUIModelWindow model;
 
-    
     public LoginController(newGUIModelWindow model) {
         this.model = model;
     }
 
-    public void authenticateUser(String username, String password) {
+    public boolean authenticateUser(String username, String password) {
         if (model.authenticateUser(username, password)) {
             LoginView.showMessage("Login Successful!");
             LoginView.postLoginOptions(this);
         } else {
             LoginView.showMessage("Invalid username or password");
         }
+        return false;
     }
-
 
     public void addUser() {
         String[] userData = LoginView.getNewUserData();
@@ -41,13 +41,11 @@ public class LoginController {
         }
     }
 
-	public void updateCustomer(Customer customer) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void updateCustomer(Customer customer) {
+        // TODO: Implement update logic
+    }
 
-	public void addUser(String string, String string2, String string3) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void addUser(String firstName, String lastName, String email) {
+        // TODO: Implement add user logic
+    }
 }
