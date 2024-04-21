@@ -31,7 +31,11 @@ public class flightList {
 	
 	@Override
 	public String toString() {
-		return this.model + " " + this.ID + ": " + this.DepartureAirport + " to " + this.ArrivalAirport;
+		if (this.model != null) {
+			return this.model + " " + this.ID + ": " + this.DepartureAirport + " to " + this.ArrivalAirport;
+		} 
+		return "No Flights found.";
+		
 	}
 
 	public char[] getArrivalAirport() {
