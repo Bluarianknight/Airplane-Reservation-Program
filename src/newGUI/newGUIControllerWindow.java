@@ -8,8 +8,11 @@ public class newGUIControllerWindow {
 
 	public DefaultListModel<flightList> getFlightData() {
 		DefaultListModel<flightList> x = model.getFlightData();
-		flightList test = x.elementAt(0);
-		System.out.println(test.ArrivalAirport);
+		return x;
+	}
+	
+	public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
+		DefaultListModel<flightList> x = model.getFilteredFlightData(firstSearch, secondSearch);
 		return x;
 	}
 }

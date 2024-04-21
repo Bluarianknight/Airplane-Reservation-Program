@@ -36,7 +36,7 @@ public class purchaseDialogView extends JDialog {
 		
 		flight = newFlight;
 		setTitle("Purchase Dialog");
-		setBounds(100, 100, 590, 379);
+		setBounds(100, 100, 703, 453);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -70,23 +70,23 @@ public class purchaseDialogView extends JDialog {
 		contentPanel.add(lblDepartureTime);
 		
 		JLabel lblSelArriveAirport = new JLabel(flight.ArrivalAirport);
-		sl_contentPanel.putConstraint(SpringLayout.WEST, lblSelArriveAirport, 24, SpringLayout.EAST, lblarrivalairport);
-		sl_contentPanel.putConstraint(SpringLayout.SOUTH, lblSelArriveAirport, 0, SpringLayout.SOUTH, lblarrivalairport);
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, lblSelArriveAirport, 0, SpringLayout.NORTH, lblarrivalairport);
 		contentPanel.add(lblSelArriveAirport);
 		
 		JLabel lblSelArrivalTime = new JLabel(String.valueOf(flight.TimeArrived));
 		sl_contentPanel.putConstraint(SpringLayout.NORTH, lblSelArrivalTime, 0, SpringLayout.NORTH, lblArrivalTime);
-		sl_contentPanel.putConstraint(SpringLayout.WEST, lblSelArrivalTime, 0, SpringLayout.WEST, lblSelArriveAirport);
 		contentPanel.add(lblSelArrivalTime);
 		
 		JLabel lblSelDepartAir = new JLabel(flight.DepartureAirport);
+		sl_contentPanel.putConstraint(SpringLayout.EAST, lblSelArriveAirport, 0, SpringLayout.EAST, lblSelDepartAir);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, lblSelArrivalTime, 0, SpringLayout.WEST, lblSelDepartAir);
 		sl_contentPanel.putConstraint(SpringLayout.NORTH, lblSelDepartAir, 0, SpringLayout.NORTH, lbldepartairport);
-		sl_contentPanel.putConstraint(SpringLayout.EAST, lblSelDepartAir, 0, SpringLayout.EAST, lblSelArriveAirport);
 		contentPanel.add(lblSelDepartAir);
 		
 		JLabel lblSelDepartTime = new JLabel(String.valueOf(flight.TimeLeft));
-		sl_contentPanel.putConstraint(SpringLayout.WEST, lblSelDepartTime, 0, SpringLayout.WEST, lblSelArriveAirport);
-		sl_contentPanel.putConstraint(SpringLayout.SOUTH, lblSelDepartTime, 0, SpringLayout.SOUTH, lblDepartureTime);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, lblSelDepartAir, 0, SpringLayout.WEST, lblSelDepartTime);
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, lblSelDepartTime, 0, SpringLayout.NORTH, lblDepartureTime);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, lblSelDepartTime, 40, SpringLayout.EAST, lblDepartureTime);
 		contentPanel.add(lblSelDepartTime);
 		
 		JLabel lblTitlePurchase = new JLabel("Purchase Details");
@@ -96,84 +96,86 @@ public class purchaseDialogView extends JDialog {
 		contentPanel.add(lblTitlePurchase);
 		
 		JPanel panel = new JPanel();
+		sl_contentPanel.putConstraint(SpringLayout.WEST, panel, 116, SpringLayout.EAST, lblSelArriveAirport);
+		sl_contentPanel.putConstraint(SpringLayout.EAST, panel, -64, SpringLayout.EAST, contentPanel);
 		panel.setBorder(new LineBorder(Color.GRAY, 2));
 		panel.setBackground(Color.WHITE);
 		sl_contentPanel.putConstraint(SpringLayout.NORTH, panel, 0, SpringLayout.NORTH, lblarrivalairport);
-		sl_contentPanel.putConstraint(SpringLayout.WEST, panel, 139, SpringLayout.EAST, lblSelArriveAirport);
 		sl_contentPanel.putConstraint(SpringLayout.SOUTH, panel, 256, SpringLayout.SOUTH, lblTitlePurchase);
-		sl_contentPanel.putConstraint(SpringLayout.EAST, panel, -64, SpringLayout.EAST, contentPanel);
 		contentPanel.add(panel);
 		SpringLayout sl_panel = new SpringLayout();
 		panel.setLayout(sl_panel);
 		
 		JLabel lblFirstName = new JLabel("First Name:");
-		sl_panel.putConstraint(SpringLayout.WEST, lblFirstName, 9, SpringLayout.WEST, panel);
 		panel.add(lblFirstName);
 		
 		JLabel lblLastName = new JLabel("Last Name:");
-		sl_panel.putConstraint(SpringLayout.SOUTH, lblLastName, -187, SpringLayout.SOUTH, panel);
-		sl_panel.putConstraint(SpringLayout.SOUTH, lblFirstName, -10, SpringLayout.NORTH, lblLastName);
-		sl_panel.putConstraint(SpringLayout.WEST, lblLastName, 0, SpringLayout.WEST, lblFirstName);
+		sl_panel.putConstraint(SpringLayout.EAST, lblFirstName, 0, SpringLayout.EAST, lblLastName);
 		panel.add(lblLastName);
 		
 		JLabel lblCreditCardInfo = new JLabel("Credit Card Digits:");
+		sl_panel.putConstraint(SpringLayout.WEST, lblLastName, 0, SpringLayout.WEST, lblCreditCardInfo);
+		sl_panel.putConstraint(SpringLayout.SOUTH, lblLastName, -6, SpringLayout.NORTH, lblCreditCardInfo);
 		panel.add(lblCreditCardInfo);
 		
 		txtfldCreditCardDigits = new JTextField();
+		sl_panel.putConstraint(SpringLayout.NORTH, lblCreditCardInfo, 3, SpringLayout.NORTH, txtfldCreditCardDigits);
 		sl_panel.putConstraint(SpringLayout.EAST, lblCreditCardInfo, -6, SpringLayout.WEST, txtfldCreditCardDigits);
-		sl_panel.putConstraint(SpringLayout.NORTH, txtfldCreditCardDigits, -3, SpringLayout.NORTH, lblCreditCardInfo);
-		sl_panel.putConstraint(SpringLayout.WEST, txtfldCreditCardDigits, 103, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.WEST, txtfldCreditCardDigits, 127, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.EAST, txtfldCreditCardDigits, -13, SpringLayout.EAST, panel);
 		panel.add(txtfldCreditCardDigits);
 		txtfldCreditCardDigits.setColumns(10);
 		
 		txtfldLastName = new JTextField();
-		sl_panel.putConstraint(SpringLayout.NORTH, lblCreditCardInfo, 6, SpringLayout.SOUTH, txtfldLastName);
-		sl_panel.putConstraint(SpringLayout.EAST, txtfldCreditCardDigits, 0, SpringLayout.EAST, txtfldLastName);
-		sl_panel.putConstraint(SpringLayout.NORTH, txtfldLastName, 31, SpringLayout.NORTH, panel);
-		sl_panel.putConstraint(SpringLayout.WEST, txtfldLastName, 6, SpringLayout.EAST, lblLastName);
+		sl_panel.putConstraint(SpringLayout.WEST, txtfldLastName, 9, SpringLayout.EAST, lblLastName);
 		sl_panel.putConstraint(SpringLayout.EAST, txtfldLastName, -13, SpringLayout.EAST, panel);
+		sl_panel.putConstraint(SpringLayout.NORTH, txtfldCreditCardDigits, 3, SpringLayout.SOUTH, txtfldLastName);
+		sl_panel.putConstraint(SpringLayout.NORTH, txtfldLastName, 31, SpringLayout.NORTH, panel);
 		txtfldLastName.setColumns(10);
 		panel.add(txtfldLastName);
 		
 		txtfldFirstName = new JTextField();
-		sl_panel.putConstraint(SpringLayout.NORTH, txtfldFirstName, -3, SpringLayout.NORTH, lblFirstName);
-		sl_panel.putConstraint(SpringLayout.WEST, txtfldFirstName, 6, SpringLayout.EAST, lblFirstName);
-		sl_panel.putConstraint(SpringLayout.EAST, txtfldFirstName, 0, SpringLayout.EAST, txtfldCreditCardDigits);
+		sl_panel.putConstraint(SpringLayout.WEST, txtfldFirstName, 9, SpringLayout.EAST, lblFirstName);
+		sl_panel.putConstraint(SpringLayout.SOUTH, txtfldFirstName, -4, SpringLayout.NORTH, txtfldLastName);
+		sl_panel.putConstraint(SpringLayout.EAST, txtfldFirstName, -13, SpringLayout.EAST, panel);
+		sl_panel.putConstraint(SpringLayout.NORTH, lblFirstName, 3, SpringLayout.NORTH, txtfldFirstName);
 		txtfldFirstName.setColumns(10);
 		panel.add(txtfldFirstName);
 		
 		JLabel lblCreditCardExpire = new JLabel("Credit Card Expiration:");
-		sl_panel.putConstraint(SpringLayout.NORTH, lblCreditCardExpire, 9, SpringLayout.SOUTH, txtfldCreditCardDigits);
-		sl_panel.putConstraint(SpringLayout.WEST, lblCreditCardExpire, 0, SpringLayout.WEST, lblFirstName);
 		panel.add(lblCreditCardExpire);
 		
 		txtfldExpire = new JTextField();
-		sl_panel.putConstraint(SpringLayout.WEST, txtfldExpire, 8, SpringLayout.EAST, lblCreditCardExpire);
-		sl_panel.putConstraint(SpringLayout.EAST, txtfldExpire, 0, SpringLayout.EAST, txtfldCreditCardDigits);
-		sl_panel.putConstraint(SpringLayout.NORTH, txtfldExpire, 6, SpringLayout.SOUTH, txtfldCreditCardDigits);
+		sl_panel.putConstraint(SpringLayout.NORTH, lblCreditCardExpire, 3, SpringLayout.NORTH, txtfldExpire);
+		sl_panel.putConstraint(SpringLayout.EAST, lblCreditCardExpire, -6, SpringLayout.WEST, txtfldExpire);
+		sl_panel.putConstraint(SpringLayout.WEST, txtfldExpire, 10, SpringLayout.WEST, txtfldCreditCardDigits);
+		sl_panel.putConstraint(SpringLayout.EAST, txtfldExpire, -13, SpringLayout.EAST, panel);
 		txtfldExpire.setColumns(10);
 		panel.add(txtfldExpire);
 		
-		JLabel lblCreditCardSecurity = new JLabel("Credit Card Sec. Digits:");
-		sl_panel.putConstraint(SpringLayout.NORTH, lblCreditCardSecurity, 13, SpringLayout.SOUTH, lblCreditCardExpire);
-		sl_panel.putConstraint(SpringLayout.WEST, lblCreditCardSecurity, 0, SpringLayout.WEST, lblFirstName);
+		JLabel lblCreditCardSecurity = new JLabel("CC. Security Digits:");
+		sl_panel.putConstraint(SpringLayout.EAST, lblCreditCardSecurity, 0, SpringLayout.EAST, lblCreditCardExpire);
 		panel.add(lblCreditCardSecurity);
 		
 		txtfldSecDigit = new JTextField();
-		sl_panel.putConstraint(SpringLayout.NORTH, txtfldSecDigit, 6, SpringLayout.SOUTH, txtfldExpire);
-		sl_panel.putConstraint(SpringLayout.WEST, txtfldSecDigit, 0, SpringLayout.WEST, txtfldExpire);
-		sl_panel.putConstraint(SpringLayout.EAST, txtfldSecDigit, 0, SpringLayout.EAST, txtfldCreditCardDigits);
+		sl_panel.putConstraint(SpringLayout.NORTH, lblCreditCardSecurity, 3, SpringLayout.NORTH, txtfldSecDigit);
+		sl_panel.putConstraint(SpringLayout.SOUTH, txtfldExpire, -8, SpringLayout.NORTH, txtfldSecDigit);
+		sl_panel.putConstraint(SpringLayout.NORTH, txtfldSecDigit, 106, SpringLayout.NORTH, panel);
+		sl_panel.putConstraint(SpringLayout.WEST, txtfldSecDigit, 10, SpringLayout.WEST, txtfldExpire);
+		sl_panel.putConstraint(SpringLayout.EAST, txtfldSecDigit, -13, SpringLayout.EAST, panel);
 		txtfldSecDigit.setColumns(10);
 		panel.add(txtfldSecDigit);
 		
 		JLabel lblTickets = new JLabel("Tickets:");
-		sl_panel.putConstraint(SpringLayout.WEST, lblTickets, 0, SpringLayout.WEST, lblFirstName);
+		sl_panel.putConstraint(SpringLayout.NORTH, lblTickets, 7, SpringLayout.SOUTH, lblCreditCardSecurity);
+		sl_panel.putConstraint(SpringLayout.WEST, lblTickets, 19, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.EAST, lblTickets, -199, SpringLayout.EAST, panel);
 		panel.add(lblTickets);
 		
 		txtfldTicket = new JTextField();
-		sl_panel.putConstraint(SpringLayout.WEST, txtfldTicket, 6, SpringLayout.EAST, lblTickets);
-		sl_panel.putConstraint(SpringLayout.NORTH, lblTickets, 3, SpringLayout.NORTH, txtfldTicket);
-		sl_panel.putConstraint(SpringLayout.NORTH, txtfldTicket, 6, SpringLayout.SOUTH, lblCreditCardSecurity);
+		sl_panel.putConstraint(SpringLayout.NORTH, txtfldTicket, 7, SpringLayout.SOUTH, lblCreditCardSecurity);
+		sl_panel.putConstraint(SpringLayout.WEST, txtfldTicket, 69, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.EAST, txtfldTicket, -172, SpringLayout.EAST, panel);
 		txtfldTicket.setColumns(10);
 		panel.add(txtfldTicket);
 		
@@ -184,8 +186,8 @@ public class purchaseDialogView extends JDialog {
 		contentPanel.add(lblPrice);
 		
 		JLabel lblselPrice = new JLabel("$" + String.valueOf(flight.cost));
-		sl_contentPanel.putConstraint(SpringLayout.WEST, lblselPrice, 6, SpringLayout.EAST, lblPrice);
-		sl_contentPanel.putConstraint(SpringLayout.SOUTH, lblselPrice, 0, SpringLayout.SOUTH, lblPrice);
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, lblselPrice, 0, SpringLayout.NORTH, lblPrice);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, lblselPrice, 82, SpringLayout.EAST, lblPrice);
 		lblselPrice.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		contentPanel.add(lblselPrice);
 		{
