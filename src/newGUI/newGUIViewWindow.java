@@ -205,7 +205,12 @@ public class newGUIViewWindow {
 	
 	
 	public void loadList() {
-		listModel = control.getFlightData();
-		listFlightList.setModel(listModel);
-	}
+        listModel = control.getFlightData();
+        listFlightList.setModel(listModel);
+    }
+
+    public void setVisible(boolean b) {
+        frmAirlineReservationProgram.setVisible(b);
+    }
 }
+

@@ -18,19 +18,24 @@ public class flightList {
 		
 	}
 	
-	public flightList(Integer newID, String newModel, String arrived, String depart, Time timelefted, Time timearrive, BigDecimal newMoney) {
-		this.ID = newID;
-		this.model = newModel;
-		this.ArrivalAirport = arrived;
-		this.DepartureAirport = depart;
-		this.TimeLeft = timelefted;
-		this.TimeArrived = timearrive;
-		this.cost = newMoney;
-	}
+	 public flightList(Integer ID, String Model, String ArrivalAirport, String DepartureAirport, Time TimeLeft, Time TimeArrived, BigDecimal Cost) {
+	        this.ID = ID;
+	        this.model = Model;
+	        this.ArrivalAirport = ArrivalAirport;
+	        this.DepartureAirport = DepartureAirport;
+	        this.TimeLeft = TimeLeft;
+	        this.TimeArrived = TimeArrived;
+	        this.cost = Cost;
+	    }
 	
 	
 	@Override
 	public String toString() {
 		return this.model + " " + this.ID + ": " + this.DepartureAirport + " to " + this.ArrivalAirport;
+	}
+
+	public char[] getArrivalAirport() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
