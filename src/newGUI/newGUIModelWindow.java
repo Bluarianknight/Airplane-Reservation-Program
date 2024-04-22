@@ -12,13 +12,17 @@ import javax.swing.JOptionPane;
 import Customer.Customer;
 
 public class newGUIModelWindow {
+    // Define the locations of the database files
     String authDataLocation = "C://Database//authorization.accdb";
     String mainDataLocation = "C://Database//mainDatabase.accdb";
+    // Construct connection strings
     String connectString = "jdbc:ucanaccess://";
     String authData = connectString + authDataLocation;
     String mainData = connectString + mainDataLocation;
+    // Initialize the connection object
     Connection connection = null;
 
+    // Method to connect to the database
     public void Connect(String database) {
         String url = database.equals("auth") ? authData : mainData;
         try {
@@ -27,13 +31,15 @@ public class newGUIModelWindow {
             }
             connection = DriverManager.getConnection(url);
         } catch (SQLException sqlex) {
+            // Show error message if connection fails
             JOptionPane.showMessageDialog(null, "Error connecting to database: " + sqlex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    // Method to authenticate a user
     public boolean authenticateUser(String username, String password) {
         Connect("auth");
-        try (PreparedStatement ps = connection.prepareStatement("SELECT password FROM authorization WHERE username = ?")) { // Corrected table name
+        try (PreparedStatement ps = connection.prepareStatement("SELECT password FROM authorization WHERE username = ?")) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -54,6 +60,7 @@ public class newGUIModelWindow {
         return false;
     }
 
+    // Method to retrieve flight data
     public DefaultListModel<flightList> getFlightData() {
         DefaultListModel<flightList> listModel = new DefaultListModel<>();
         Connect("main");
@@ -84,9 +91,9 @@ public class newGUIModelWindow {
         return listModel;
     }
 
+    // Method to add a new user
     public boolean addUser(String username, String password, String email) {
         Connect("auth");
-        // Use try-with-resources to ensure the PreparedStatement is closed after the operation
         try (PreparedStatement ps = connection.prepareStatement("INSERT INTO authorization (username, password, email) VALUES (?, ?, ?)")) {
             ps.setString(1, username);
             ps.setString(2, password); // This should be a hashed password in a real application
@@ -96,7 +103,6 @@ public class newGUIModelWindow {
             JOptionPane.showMessageDialog(null, "Error adding user: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
             return false;
         } finally {
-            // Close the connection
             try {
                 if (connection != null) {
                     connection.close();
@@ -107,6 +113,7 @@ public class newGUIModelWindow {
         }
     }
 
+    // Method to delete a user
     public boolean deleteUser(String username) {
         Connect("auth");
         try (PreparedStatement ps = connection.prepareStatement("DELETE FROM authorization WHERE username = ?")) {
@@ -118,6 +125,7 @@ public class newGUIModelWindow {
         }
     }
     
+    // Method to retrieve customer information by username
     public Customer getCustomerByUsername1(String username) {
         Connect("auth"); // Establish database connection
         try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM authorization WHERE username = ?")) {
@@ -144,6 +152,7 @@ public class newGUIModelWindow {
         return null;
     }
     
+    // Method to update customer information
     public void updateCustomer1(Customer customer) {
         Connect("auth");
         try (PreparedStatement ps = connection.prepareStatement("UPDATE authorization SET password = ?, email = ? WHERE username = ?")) {
@@ -169,26 +178,28 @@ public class newGUIModelWindow {
         }
     }
 
+    // Method to retrieve customer information by username (unimplemented)
+    public Customer getCustomerByUsername(String username) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
+    // Method to update customer information (unimplemented)
+    public void updateCustomer(Customer customer) {
+        // TODO Auto-generated method stub
+        
+    }
 
-	public Customer getCustomerByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    // Method to verify if a username exists (unimplemented)
+    public boolean verifyUsername(String username) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public void updateCustomer(Customer customer) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean verifyUsername(String username) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    // Method to retrieve filtered flight data (unimplemented)
+    public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }
