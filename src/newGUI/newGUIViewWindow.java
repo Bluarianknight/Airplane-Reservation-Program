@@ -34,16 +34,17 @@ public class newGUIViewWindow {
 	JLabel lblSelCost = new JLabel("x");
 	
 	public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            newGUIModelWindow model = new newGUIModelWindow();
-            if (LoginView.requestLogin(model)) { // Make sure to pass 'model' as the argument
-                newGUIViewWindow window = new newGUIViewWindow();
-                window.frmAirlineReservationProgram.setVisible(true);
-            } else {
-                System.exit(0); // Exit if login is unsuccessful
-            }
-        });
-    }
+	    EventQueue.invokeLater(() -> {
+	        newGUIModelWindow model = new newGUIModelWindow();
+	        LoginController controller = LoginController.getInstance(model); // Pass the model here
+	        if (LoginView.requestLogin(model, controller)) {
+	            newGUIViewWindow window = new newGUIViewWindow();
+	            window.frmAirlineReservationProgram.setVisible(true);
+	        } else {
+	            System.exit(0);
+	        }
+	    });
+	}
 
 
 	/**
