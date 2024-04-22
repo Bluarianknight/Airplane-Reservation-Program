@@ -66,6 +66,7 @@ public class LoginController {
         model.updateCustomer1(customer);
     }
 
+
     // Method placeholder for adding a user. Currently not implemented.
     // A proper implementation is needed for adding users with first and last names.
     public void addUser(String firstName, String lastName, String email) {
@@ -74,6 +75,13 @@ public class LoginController {
 
     // Setter method for the model.
     // It allows changing the model associated with this controller.
+
+/*
+    public void addUser(String firstName, String lastName, String email) {
+        // TODO: Implement add user logic
+    }
+*/
+
     public void setModel(newGUIModelWindow model2) {
         this.model = model2;
     }

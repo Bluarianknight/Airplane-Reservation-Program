@@ -44,9 +44,18 @@ public class flightList {
         return "No Flights found.";
     }
 
+
     
     public char[] getArrivalAirport() {
         // TODO: This method needs to be implemented or fixed to match the return type
         return null;
     }
+
+	/*
+	public char[] getArrivalAirport() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	*/
+
 }

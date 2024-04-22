@@ -1,5 +1,10 @@
 package newGUI;
 
+
+/*
+ * This class contains the 'model' for the main window of the airline reservation program - it handles the calculating and connections to the databases.
+ * 
+ */
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,7 +17,11 @@ import javax.swing.JOptionPane;
 import Customer.Customer;
 
 public class newGUIModelWindow {
+
     // Define the locations of the database files
+
+	// The strings for the database locations - it assumes the databases will be in the C:/Database folder. If not, it won't work.
+
     String authDataLocation = "C://Database//authorization.accdb";
     String mainDataLocation = "C://Database//mainDatabase.accdb";
     // Construct connection strings
@@ -24,7 +33,8 @@ public class newGUIModelWindow {
 
     // Method to connect to the database
     public void Connect(String database) {
-        String url = database.equals("auth") ? authData : mainData;
+        String url = database.equals("auth") ? authData : mainData; // Code that checks if the URL is the authorization database or the main database set above.
+        
         try {
             if (connection != null) {
                 connection.close(); // Close existing connection if open
@@ -90,6 +100,35 @@ public class newGUIModelWindow {
         }
         return listModel;
     }
+    
+    public DefaultListModel<flightList> getFilteredFlightData1(String firstSearch, String secondSearch) {
+		
+		DefaultListModel<flightList> listModel = new DefaultListModel<flightList>();
+		try {
+			Connect("");
+			Statement statement;
+			ResultSet result;
+			try {
+				 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				 result = statement.executeQuery("SELECT * FROM Flights WHERE " + firstSearch + " = " + "'" + secondSearch + "'");
+				result.beforeFirst();
+			} catch (ArrayIndexOutOfBoundsException exception ) {
+				flightList test = listModel.elementAt(0);
+				System.out.println(test.ArrivalAirport);
+				return listModel;
+			}
+
+			while (result.next()) {
+				listModel.addElement(new flightList(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getTime(5), result.getTime(6), result.getBigDecimal(7)));
+			}
+			
+		} catch (SQLException sqlex) {
+			JOptionPane.showMessageDialog(null, sqlex);
+			listModel.addElement(new flightList());
+			return listModel;
+		}
+		return listModel;
+	}
 
     // Method to add a new user
     public boolean addUser(String username, String password, String email) {
@@ -184,6 +223,7 @@ public class newGUIModelWindow {
         return null;
     }
 
+
     // Method to update customer information (unimplemented)
     public void updateCustomer(Customer customer) {
         // TODO Auto-generated method stub
@@ -201,5 +241,24 @@ public class newGUIModelWindow {
         // TODO Auto-generated method stub
         return null;
     }
+
+    /*
+	public Customer getCustomerByUsername(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void updateCustomer(Customer customer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean verifyUsername(String username) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	*/
+
 
 }
