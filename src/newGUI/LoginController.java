@@ -56,11 +56,11 @@ public class LoginController {
     public void updateCustomer(Customer customer) {
         model.updateCustomer1(customer);
     }
-
+/*
     public void addUser(String firstName, String lastName, String email) {
         // TODO: Implement add user logic
     }
-
+*/
     public void setModel(newGUIModelWindow model2) {
         this.model = model2;
     }
