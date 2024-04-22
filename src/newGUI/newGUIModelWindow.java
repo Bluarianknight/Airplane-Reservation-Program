@@ -1,5 +1,10 @@
 package newGUI;
 
+
+/*
+ * This class contains the 'model' for the main window of the airline reservation program - it handles the calculating and connections to the databases.
+ * 
+ */
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +17,7 @@ import javax.swing.JOptionPane;
 import Customer.Customer;
 
 public class newGUIModelWindow {
+	// The strings for the database locations - it assumes the databases will be in the C:/Database folder. If not, it won't work.
     String authDataLocation = "C://Database//authorization.accdb";
     String mainDataLocation = "C://Database//mainDatabase.accdb";
     String connectString = "jdbc:ucanaccess://";
@@ -20,7 +26,8 @@ public class newGUIModelWindow {
     Connection connection = null;
 
     public void Connect(String database) {
-        String url = database.equals("auth") ? authData : mainData;
+        String url = database.equals("auth") ? authData : mainData; // Code that checks if the URL is the authorization database or the main database set above.
+        
         try {
             if (connection != null) {
                 connection.close(); // Close existing connection if open
@@ -83,6 +90,35 @@ public class newGUIModelWindow {
         }
         return listModel;
     }
+    
+public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
+		
+		DefaultListModel<flightList> listModel = new DefaultListModel<flightList>();
+		try {
+			Connect("");
+			Statement statement;
+			ResultSet result;
+			try {
+				 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				 result = statement.executeQuery("SELECT * FROM Flights WHERE " + firstSearch + " = " + "'" + secondSearch + "'");
+				result.beforeFirst();
+			} catch (ArrayIndexOutOfBoundsException exception ) {
+				flightList test = listModel.elementAt(0);
+				System.out.println(test.ArrivalAirport);
+				return listModel;
+			}
+
+			while (result.next()) {
+				listModel.addElement(new flightList(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getTime(5), result.getTime(6), result.getBigDecimal(7)));
+			}
+			
+		} catch (SQLException sqlex) {
+			JOptionPane.showMessageDialog(null, sqlex);
+			listModel.addElement(new flightList());
+			return listModel;
+		}
+		return listModel;
+	}
 
     public boolean addUser(String username, String password, String email) {
         Connect("auth");
