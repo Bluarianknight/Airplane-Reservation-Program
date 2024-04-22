@@ -117,6 +117,59 @@ public class newGUIModelWindow {
             return false;
         }
     }
+    
+    public Customer getCustomerByUsername1(String username) {
+        Connect("auth"); // Establish database connection
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM authorization WHERE username = ?")) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Customer customer = new Customer();
+                customer.setName(username);
+                customer.setPassword(rs.getString("password")); // assuming password field exists
+                customer.setEmail(rs.getString("email")); // assuming email field exists
+                return customer;
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error retrieving user: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error closing database connection: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return null;
+    }
+    
+    public void updateCustomer1(Customer customer) {
+        Connect("auth");
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE authorization SET password = ?, email = ? WHERE username = ?")) {
+            ps.setString(1, customer.getPassword());
+            ps.setString(2, customer.getEmail());
+            ps.setString(3, customer.getName());
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Customer updated successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No customer found with the given username.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error updating user: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error closing database connection: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+
 
 	public Customer getCustomerByUsername(String username) {
 		// TODO Auto-generated method stub

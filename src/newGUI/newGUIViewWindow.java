@@ -17,6 +17,7 @@ import javax.swing.SpringLayout;
 public class newGUIViewWindow {
 
 	private static JFrame frmAirlineReservationProgram;
+	 private static newGUIViewWindow instance;
 
 	/**
 	 * Launch the application.
@@ -36,17 +37,24 @@ public class newGUIViewWindow {
 	public static void main(String[] args) {
 	    EventQueue.invokeLater(() -> {
 	        newGUIModelWindow model = new newGUIModelWindow();
-	        LoginController controller = LoginController.getInstance(model); // Pass the model here
-	        if (LoginView.requestLogin(model, controller)) {
-	            newGUIViewWindow window = new newGUIViewWindow();
-	            window.frmAirlineReservationProgram.setVisible(true);
+	        LoginController controller = LoginController.getInstance(model);
+	        boolean loginSuccess = LoginView.requestLogin(model, controller);
+	        if (loginSuccess) {
+	            newGUIViewWindow.getInstance().showWindow(); // Show main window if login is successful
 	        } else {
-	            System.exit(0);
+	            System.exit(0); // Exit if login is unsuccessful
 	        }
 	    });
 	}
 
-
+	// Singleton pattern to ensure only one instance of the window
+    public static newGUIViewWindow getInstance() {
+        if (instance == null) {
+            instance = new newGUIViewWindow();
+        }
+        return instance;
+    }
+    
 	/**
 	 * Create the application.
 	 */
@@ -55,18 +63,26 @@ public class newGUIViewWindow {
 		loadList();
 		
 	}
+	
+	 // Public method to make the JFrame visible
+    public void showWindow() {
+        if (frmAirlineReservationProgram != null) {
+            frmAirlineReservationProgram.setVisible(true);
+        }
+    }
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
-		frmAirlineReservationProgram = new JFrame();
-		frmAirlineReservationProgram.setResizable(false);
-		frmAirlineReservationProgram.setTitle("Airline Reservation Program");
-		frmAirlineReservationProgram.setBounds(100, 100, 720, 480);
-		frmAirlineReservationProgram.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private void initialize() {
+        frmAirlineReservationProgram = new JFrame();
+        frmAirlineReservationProgram.setResizable(false);
+        frmAirlineReservationProgram.setTitle("Airline Reservation Program");
+        frmAirlineReservationProgram.setBounds(100, 100, 720, 480);
+        frmAirlineReservationProgram.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SpringLayout springLayout = new SpringLayout();
 		frmAirlineReservationProgram.getContentPane().setLayout(springLayout);
+		
 		
 		JPanel mainPanel = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, mainPanel, 10, SpringLayout.NORTH, frmAirlineReservationProgram.getContentPane());
@@ -277,4 +293,5 @@ public class newGUIViewWindow {
         frmAirlineReservationProgram.setVisible(b);
     }
 }
+
 

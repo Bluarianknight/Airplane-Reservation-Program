@@ -1,5 +1,7 @@
 package newGUI;
 
+import java.awt.EventQueue;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -57,19 +59,20 @@ public static void displayCustomerInfo(Customer customer) {
 }
 
 public static boolean editCustomerInfo(Customer customer) {
-    JTextField fNameField = new JTextField(customer.getName());
-    JTextField lNameField = new JTextField(customer.getName());
+    JTextField usernameField = new JTextField(customer.getName());
+    JPasswordField passwordField = new JPasswordField();
+    passwordField.setText(customer.getPassword()); // Set the initial password value
     JTextField emailField = new JTextField(customer.getEmail());
     Object[] message = {
-            "First Name:", fNameField,
-            "Last Name:", lNameField,
+            "Username:", usernameField,
+            "Password:", passwordField,
             "Email:", emailField
     };
-    int option = JOptionPane.showConfirmDialog(null, message, "Edit Customer", JOptionPane.OK_CANCEL_OPTION);
+    int option = JOptionPane.showConfirmDialog(null, message, "Edit User", JOptionPane.OK_CANCEL_OPTION);
     if (option == JOptionPane.OK_OPTION) {
         // Update customer data
-        customer.setName(fNameField.getText());
-        customer.setName(lNameField.getText());
+        customer.setName(usernameField.getText());
+        customer.setPassword(new String(passwordField.getPassword()));
         customer.setEmail(emailField.getText());
         return true;
     }
@@ -82,7 +85,7 @@ public static boolean confirmDeletion() {
 }
 
 public static void postLoginOptions(LoginController controller) {
-    Object[] options = {"Add User", "Edit User", "Delete User"};
+    Object[] options = {"Add User", "Edit User", "Log In"};
     int choice = JOptionPane.showOptionDialog(null, "Select an option", "Options",
             JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
@@ -94,13 +97,22 @@ public static void postLoginOptions(LoginController controller) {
             }
             break;
         case 1: // Edit User
-            // The edit user functionality will depend on your implementation
-            break;
-        case 2: // Delete User
-            String usernameToDelete = requestUsername();
-            if (confirmDeletion()) {
-                controller.deleteUser(usernameToDelete);
+            String usernameToEdit = requestUsername();
+            Customer customer = controller.getModel().getCustomerByUsername1(usernameToEdit);
+            if (customer != null) {
+                if (editCustomerInfo(customer)) {
+                    controller.updateCustomer(customer);
+                    JOptionPane.showMessageDialog(null, "User information updated successfully.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "User not found.");
             }
+            break;
+        case 2: // Log In
+            // Show the main GUI if user clicks "Log In"
+            EventQueue.invokeLater(() -> {
+                newGUIViewWindow.getInstance().showWindow();
+            });
             break;
         default:
             // Handle other cases or ignore
