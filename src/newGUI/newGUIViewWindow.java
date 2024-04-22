@@ -1,23 +1,23 @@
 package newGUI;
 
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 
-import javax.swing.JFrame;
-import javax.swing.SpringLayout;
-import javax.swing.JPanel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.JList;
-import java.awt.Color;
-import javax.swing.JTextPane;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 public class newGUIViewWindow {
 
-	private JFrame frmAirlineReservationProgram;
+	private static JFrame frmAirlineReservationProgram;
+	 private static newGUIViewWindow instance;
 
 	/**
 	 * Launch the application.
@@ -35,18 +35,26 @@ public class newGUIViewWindow {
 	JLabel lblSelCost = new JLabel("x");
 	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					newGUIViewWindow window = new newGUIViewWindow();
-					window.frmAirlineReservationProgram.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	    EventQueue.invokeLater(() -> {
+	        newGUIModelWindow model = new newGUIModelWindow();
+	        LoginController controller = LoginController.getInstance(model);
+	        boolean loginSuccess = LoginView.requestLogin(model, controller);
+	        if (loginSuccess) {
+	            newGUIViewWindow.getInstance().showWindow(); // Show main window if login is successful
+	        } else {
+	            System.exit(0); // Exit if login is unsuccessful
+	        }
+	    });
 	}
 
+	// Singleton pattern to ensure only one instance of the window
+    public static newGUIViewWindow getInstance() {
+        if (instance == null) {
+            instance = new newGUIViewWindow();
+        }
+        return instance;
+    }
+    
 	/**
 	 * Create the application.
 	 */
@@ -55,18 +63,26 @@ public class newGUIViewWindow {
 		loadList();
 		
 	}
+	
+	 // Public method to make the JFrame visible
+    public void showWindow() {
+        if (frmAirlineReservationProgram != null) {
+            frmAirlineReservationProgram.setVisible(true);
+        }
+    }
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
-		frmAirlineReservationProgram = new JFrame();
-		frmAirlineReservationProgram.setResizable(false);
-		frmAirlineReservationProgram.setTitle("Airline Reservation Program");
-		frmAirlineReservationProgram.setBounds(100, 100, 720, 480);
-		frmAirlineReservationProgram.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private void initialize() {
+        frmAirlineReservationProgram = new JFrame();
+        frmAirlineReservationProgram.setResizable(false);
+        frmAirlineReservationProgram.setTitle("Airline Reservation Program");
+        frmAirlineReservationProgram.setBounds(100, 100, 720, 480);
+        frmAirlineReservationProgram.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SpringLayout springLayout = new SpringLayout();
 		frmAirlineReservationProgram.getContentPane().setLayout(springLayout);
+		
 		
 		JPanel mainPanel = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, mainPanel, 10, SpringLayout.NORTH, frmAirlineReservationProgram.getContentPane());
@@ -273,8 +289,9 @@ public class newGUIViewWindow {
         listFlightList.setModel(listModel);
     }
 
-    public void setVisible(boolean b) {
+    public static void setVisible(boolean b) {
         frmAirlineReservationProgram.setVisible(b);
     }
 }
+
 

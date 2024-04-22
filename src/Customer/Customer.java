@@ -31,6 +31,16 @@ public class Customer {
 	public String getEmail() {
 		return this.email;
 	}
+
+	public void setPassword(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 }

@@ -1,6 +1,14 @@
 package newGUI;
 
+import java.awt.EventQueue;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import Customer.Customer;
@@ -15,26 +23,32 @@ public class LoginView {
     }
 
     public static String[] getNewUserData() {
-        JTextField fNameField = new JTextField(20);
-        JTextField lNameField = new JTextField(20);
+        JTextField usernameField = new JTextField(20);
+        JPasswordField passwordField = new JPasswordField(20);
         JTextField emailField = new JTextField(20);
         Object[] message = {
-            "First Name:", fNameField,
-            "Last Name:", lNameField,
-            "Email:", emailField
+                "Username:", usernameField,
+                "Password:", passwordField,
+                "Email:", emailField
         };
 
-        int option = JOptionPane.showConfirmDialog(null, message, "Add New Customer", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            return new String[] {fNameField.getText(), lNameField.getText(), emailField.getText()};
+        Object[] options = {"OK", "Cancel"};
+        int option = JOptionPane.showOptionDialog(null, message, "Register New User", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+        if (option == 0) { // OK option
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword()); // Ideally, this should be hashed
+            String email = emailField.getText();
+            return new String[]{username, password, email};
         }
         return null;
     }
 
-public static String requestUsername() {
-    String username = JOptionPane.showInputDialog("Enter your username for verification:");
-    return username;
-}
+    public static String requestUsername() {
+        return JOptionPane.showInputDialog("Enter your username for verification:");
+    }
+
 
 public static void displayCustomerInfo(Customer customer) {
     // Assuming Customer is a class representing customer data
@@ -45,19 +59,20 @@ public static void displayCustomerInfo(Customer customer) {
 }
 
 public static boolean editCustomerInfo(Customer customer) {
-    JTextField fNameField = new JTextField(customer.getName());
-    JTextField lNameField = new JTextField(customer.getName());
+    JTextField usernameField = new JTextField(customer.getName());
+    JPasswordField passwordField = new JPasswordField();
+    passwordField.setText(customer.getPassword()); // Set the initial password value
     JTextField emailField = new JTextField(customer.getEmail());
     Object[] message = {
-            "First Name:", fNameField,
-            "Last Name:", lNameField,
+            "Username:", usernameField,
+            "Password:", passwordField,
             "Email:", emailField
     };
-    int option = JOptionPane.showConfirmDialog(null, message, "Edit Customer", JOptionPane.OK_CANCEL_OPTION);
+    int option = JOptionPane.showConfirmDialog(null, message, "Edit User", JOptionPane.OK_CANCEL_OPTION);
     if (option == JOptionPane.OK_OPTION) {
         // Update customer data
-        customer.setName(fNameField.getText());
-        customer.setName(lNameField.getText());
+        customer.setName(usernameField.getText());
+        customer.setPassword(new String(passwordField.getPassword()));
         customer.setEmail(emailField.getText());
         return true;
     }
@@ -70,36 +85,58 @@ public static boolean confirmDeletion() {
 }
 
 public static void postLoginOptions(LoginController controller) {
-    Object[] options = {"Add User", "Edit User", "Delete User"};
+    Object[] options = {"Add User", "Edit User", "Log In"};
     int choice = JOptionPane.showOptionDialog(null, "Select an option", "Options",
-            JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-            null, options, options[0]);
+            JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
     switch (choice) {
         case 0: // Add User
             String[] userData = getNewUserData();
             if (userData != null) {
-                controller.addUser(userData[0], userData[1], userData[2]);
+                controller.addUser1(userData[0], userData[1], userData[2]);
             }
             break;
         case 1: // Edit User
-            Customer customer = new Customer(); // You'd actually get this from the controller
-            if (editCustomerInfo(customer)) {
-                // Assuming the controller has an 'updateCustomer' method
-                controller.updateCustomer(customer);
+            String usernameToEdit = requestUsername();
+            Customer customer = controller.getModel().getCustomerByUsername1(usernameToEdit);
+            if (customer != null) {
+                if (editCustomerInfo(customer)) {
+                    controller.updateCustomer(customer);
+                    JOptionPane.showMessageDialog(null, "User information updated successfully.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "User not found.");
             }
             break;
-        case 2: // Delete User
-            String usernameToDelete = requestUsername();
-            if (confirmDeletion()) {
-                controller.deleteUser(usernameToDelete);
-            }
+        case 2: // Log In
+            // Show the main GUI if user clicks "Log In"
+            EventQueue.invokeLater(() -> {
+                newGUIViewWindow.getInstance().showWindow();
+            });
             break;
         default:
             // Handle other cases or ignore
     }
 }
+
+public static boolean requestLogin(newGUIModelWindow model, LoginController controller) {
+    JTextField usernameField = new JTextField(20);
+    JPasswordField passwordField = new JPasswordField(20);
+    Object[] loginFields = {
+            "Username:", usernameField,
+            "Password:", passwordField
+    };
+
+    Object[] options = {"OK", "Cancel"};
+    int option = JOptionPane.showOptionDialog(null, loginFields, "Login", JOptionPane.DEFAULT_OPTION,
+            JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+    if (option == 0) { // OK option
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+        return controller.authenticateUser(username, password);
+    }
+    return false;
 }
-
-
+}
 
