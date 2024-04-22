@@ -38,8 +38,10 @@ public class flightList {
 		
 	}
 
+	/*
 	public char[] getArrivalAirport() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	*/
 }

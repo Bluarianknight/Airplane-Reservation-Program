@@ -91,7 +91,7 @@ public class newGUIModelWindow {
         return listModel;
     }
     
-public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
+    public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
 		
 		DefaultListModel<flightList> listModel = new DefaultListModel<flightList>();
 		try {
@@ -206,7 +206,7 @@ public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, St
     }
 
 
-
+    /*
 	public Customer getCustomerByUsername(String username) {
 		// TODO Auto-generated method stub
 		return null;
@@ -222,9 +222,6 @@ public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, St
 		return false;
 	}
 
-	public DefaultListModel<flightList> getFilteredFlightData(String firstSearch, String secondSearch) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	*/
 
 }
